@@ -1,97 +1,308 @@
-import React, { useState } from 'react';
-import {
-  Grid,
-  Card,
-  CardContent,
-  TextField,
-  Button,
-  Typography,
-  Stepper,
-  Step,
-  StepLabel,
-  Box,
-  InputAdornment,
-  Tooltip,
-  IconButton
+import React, { useState, useCallback, useMemo } from 'react';
+import { 
+  TextField, 
+  Button, 
+  Card, 
+  CardContent, 
+  Typography, 
+  Grid, 
+  Alert,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel
 } from '@mui/material';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import { calculateHVACLoad } from '../../utils/calculations';
+import { HVACCalculations } from '../../services/calculations/HVACCalculations';
+import { ErrorHandler } from '../../services/errorHandling/ErrorHandler';
+import { useTheme } from '@mui/material/styles';
 
-const steps = ['Room Details', 'Heat Sources', 'System Requirements'];
+interface RoomData {
+  length: string;
+  width: string;
+  height: string;
+  occupants: string;
+  windows: string;
+  outsideTemp: string;
+  desiredTemp: string;
+  humidity: string;
+  buildingType: string;
+}
 
-const HVACCalculator: React.FC = () => {
-  const [activeStep, setActiveStep] = useState(0);
-  const [formData, setFormData] = useState({
-    roomLength: '',
-    roomWidth: '',
-    roomHeight: '',
+interface CalculationResult {
+  coolingLoad: number;
+  heatingLoad: number;
+  ventilationRate: number;
+  dehumidification: number;
+  recommendedSystem: string;
+}
+
+export const HVACCalculator: React.FC = () => {
+  const theme = useTheme();
+  const [inputs, setInputs] = useState<RoomData>({
+    length: '',
+    width: '',
+    height: '',
     occupants: '',
-    equipment: '',
     windows: '',
-    insulation: 'standard',
-    outdoorTemp: '',
+    outsideTemp: '',
     desiredTemp: '',
+    humidity: '',
+    buildingType: 'residential'
   });
+  const [results, setResults] = useState<CalculationResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleCalculate = () => {
-    const results = calculateHVACLoad(formData);
-    // Handle results...
+  const validateInputs = useCallback(() => {
+    const numericInputs = Object.entries(inputs).filter(([key]) => key !== 'buildingType');
+    for (const [key, value] of numericInputs) {
+      if (!value) {
+        throw new Error(`${key.charAt(0).toUpperCase() + key.slice(1)} is required`);
+      }
+      const numValue = parseFloat(value);
+      if (isNaN(numValue)) {
+        throw new Error(`Invalid value for ${key}`);
+      }
+      if (numValue < 0) {
+        throw new Error(`${key} cannot be negative`);
+      }
+    }
+
+    return {
+      length: parseFloat(inputs.length),
+      width: parseFloat(inputs.width),
+      height: parseFloat(inputs.height),
+      occupants: parseInt(inputs.occupants),
+      windows: parseInt(inputs.windows),
+      outsideTemp: parseFloat(inputs.outsideTemp),
+      desiredTemp: parseFloat(inputs.desiredTemp),
+      humidity: parseFloat(inputs.humidity),
+      buildingType: inputs.buildingType
+    };
+  }, [inputs]);
+
+  const calculateResults = useCallback(async () => {
+    try {
+      const validatedInputs = validateInputs();
+      
+      const hvacService = new HVACCalculations();
+      const calculations = await hvacService.calculateLoads({
+        ...validatedInputs,
+        area: validatedInputs.length * validatedInputs.width,
+        volume: validatedInputs.length * validatedInputs.width * validatedInputs.height
+      });
+
+      setResults(calculations);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Calculation error');
+      ErrorHandler.handleError(err as Error, 'HVACCalculator');
+    }
+  }, [validateInputs]);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
+    const { name, value } = event.target;
+    if (name) {
+      setInputs(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
-  return (
-    <Box>
-      <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
+  const resultCards = useMemo(() => {
+    if (!results) return null;
 
+    return (
+      <Grid container spacing={2} sx={{ mt: 2 }}>
+        <Grid item xs={12} sm={6} md={4}>
+          <Card elevation={3}>
+            <CardContent>
+              <Typography variant="h6" color="primary">Cooling Load</Typography>
+              <Typography variant="h4">{results.coolingLoad.toFixed(2)} kW</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <Card elevation={3}>
+            <CardContent>
+              <Typography variant="h6" color="primary">Heating Load</Typography>
+              <Typography variant="h4">{results.heatingLoad.toFixed(2)} kW</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <Card elevation={3}>
+            <CardContent>
+              <Typography variant="h6" color="primary">Ventilation Rate</Typography>
+              <Typography variant="h4">{results.ventilationRate.toFixed(2)} m³/h</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12}>
+          <Card elevation={3}>
+            <CardContent>
+              <Typography variant="h6" color="primary">Recommended System</Typography>
+              <Typography variant="body1">{results.recommendedSystem}</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    );
+  }, [results]);
+
+  return (
+    <div>
+      <Typography variant="h4" gutterBottom color="primary">
+        HVAC Load Calculator
+      </Typography>
+      
       <Grid container spacing={3}>
-        {activeStep === 0 && (
-          <>
-            <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                label="Room Length"
-                type="number"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <Tooltip title="Enter room length in meters">
-                        <IconButton size="small">
-                          <HelpOutlineIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </InputAdornment>
-                  ),
-                }}
-                value={formData.roomLength}
-                onChange={(e) => setFormData({...formData, roomLength: e.target.value})}
-              />
+        <Grid item xs={12} md={6}>
+          <Card elevation={2} sx={{ p: 2 }}>
+            <Typography variant="h6" gutterBottom>Room Dimensions</Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  fullWidth
+                  label="Length (m)"
+                  name="length"
+                  value={inputs.length}
+                  onChange={handleInputChange}
+                  type="number"
+                  margin="normal"
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  fullWidth
+                  label="Width (m)"
+                  name="width"
+                  value={inputs.width}
+                  onChange={handleInputChange}
+                  type="number"
+                  margin="normal"
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  fullWidth
+                  label="Height (m)"
+                  name="height"
+                  value={inputs.height}
+                  onChange={handleInputChange}
+                  type="number"
+                  margin="normal"
+                />
+              </Grid>
             </Grid>
-            {/* Similar fields for width and height */}
-          </>
-        )}
-        {/* Additional steps... */}
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <Card elevation={2} sx={{ p: 2 }}>
+            <Typography variant="h6" gutterBottom>Environmental Factors</Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Outside Temperature (°C)"
+                  name="outsideTemp"
+                  value={inputs.outsideTemp}
+                  onChange={handleInputChange}
+                  type="number"
+                  margin="normal"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Desired Temperature (°C)"
+                  name="desiredTemp"
+                  value={inputs.desiredTemp}
+                  onChange={handleInputChange}
+                  type="number"
+                  margin="normal"
+                />
+              </Grid>
+            </Grid>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Card elevation={2} sx={{ p: 2 }}>
+            <Typography variant="h6" gutterBottom>Additional Information</Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6} md={3}>
+                <TextField
+                  fullWidth
+                  label="Number of Occupants"
+                  name="occupants"
+                  value={inputs.occupants}
+                  onChange={handleInputChange}
+                  type="number"
+                  margin="normal"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <TextField
+                  fullWidth
+                  label="Number of Windows"
+                  name="windows"
+                  value={inputs.windows}
+                  onChange={handleInputChange}
+                  type="number"
+                  margin="normal"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <TextField
+                  fullWidth
+                  label="Humidity (%)"
+                  name="humidity"
+                  value={inputs.humidity}
+                  onChange={handleInputChange}
+                  type="number"
+                  margin="normal"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Building Type</InputLabel>
+                  <Select
+                    name="buildingType"
+                    value={inputs.buildingType}
+                    onChange={handleInputChange}
+                    label="Building Type"
+                  >
+                    <MenuItem value="residential">Residential</MenuItem>
+                    <MenuItem value="commercial">Commercial</MenuItem>
+                    <MenuItem value="industrial">Industrial</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          </Card>
+        </Grid>
       </Grid>
 
-      <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
-        <Button 
-          disabled={activeStep === 0}
-          onClick={() => setActiveStep(prev => prev - 1)}
-        >
-          Back
-        </Button>
-        <Button 
-          variant="contained" 
-          onClick={activeStep === steps.length - 1 ? handleCalculate : () => setActiveStep(prev => prev + 1)}
-        >
-          {activeStep === steps.length - 1 ? 'Calculate' : 'Next'}
-        </Button>
-      </Box>
-    </Box>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={calculateResults}
+        sx={{ mt: 3, mb: 2 }}
+        size="large"
+      >
+        Calculate HVAC Loads
+      </Button>
+
+      {error && (
+        <Alert severity="error" sx={{ mt: 2, mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
+      {resultCards}
+    </div>
   );
 };
 
