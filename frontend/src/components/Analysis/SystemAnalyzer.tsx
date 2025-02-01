@@ -1,140 +1,294 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
-  Paper,
-  Typography,
-  Grid,
   Card,
   CardContent,
-  CircularProgress,
+  Grid,
+  Typography,
+  LinearProgress,
   Alert,
   Button,
-  Tabs,
-  Tab
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Chip,
+  Stack,
 } from '@mui/material';
-import { Line } from 'react-chartjs-2';
-import { analyzeSystem, SystemData, AnalysisResult } from '../../utils/systemAnalysis';
-import { ExportToPDF } from '../../utils/exportUtils';
+import {
+  Timeline,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot,
+} from '@mui/lab';
+import { SystemAnalysis } from '../../utils/systemAnalysis';
+import { PerformanceOptimizer } from '../../services/optimization/PerformanceOptimizer';
+import { MonitoringService } from '../../services/monitoringService';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
-const SystemAnalyzer: React.FC = () => {
-  const [activeTab, setActiveTab] = useState(0);
-  const [systemData, setSystemData] = useState<SystemData | null>(null);
-  const [analysisResults, setAnalysisResults] = useState<AnalysisResult | null>(null);
-  const [loading, setLoading] = useState(false);
+interface SystemMetrics {
+  efficiency: number;
+  performance: number;
+  reliability: number;
+  maintenance: number;
+}
+
+interface SystemAlert {
+  id: number;
+  severity: 'low' | 'medium' | 'high';
+  message: string;
+  timestamp: string;
+  status: 'active' | 'resolved';
+}
+
+export const SystemAnalyzer: React.FC = () => {
+  const [metrics, setMetrics] = useState<SystemMetrics | null>(null);
+  const [alerts, setAlerts] = useState<SystemAlert[]>([]);
+  const [performanceData, setPerformanceData] = useState<any[]>([]);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [optimizationSuggestions, setOptimizationSuggestions] = useState<string[]>([]);
 
-  const performAnalysis = async () => {
+  const fetchSystemData = useCallback(async () => {
     try {
-      setLoading(true);
-      const results = await analyzeSystem(systemData!);
-      setAnalysisResults(results);
+      setIsAnalyzing(true);
       setError(null);
+
+      // Initialize services
+      const analyzer = new SystemAnalysis();
+      const optimizer = new PerformanceOptimizer();
+      const monitoring = new MonitoringService();
+
+      // Fetch current system metrics
+      const currentMetrics = await analyzer.getCurrentMetrics();
+      setMetrics(currentMetrics);
+
+      // Fetch active alerts
+      const systemAlerts = await monitoring.getActiveAlerts();
+      setAlerts(systemAlerts);
+
+      // Get performance history
+      const history = await monitoring.getPerformanceHistory();
+      setPerformanceData(history);
+
+      // Generate optimization suggestions
+      const suggestions = await optimizer.generateSuggestions(currentMetrics);
+      setOptimizationSuggestions(suggestions);
+
     } catch (err) {
-      setError('Error performing system analysis');
+      setError(err instanceof Error ? err.message : 'Failed to analyze system');
     } finally {
-      setLoading(false);
+      setIsAnalyzing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSystemData();
+    // Set up real-time monitoring
+    const monitoringInterval = setInterval(fetchSystemData, 300000); // Update every 5 minutes
+    return () => clearInterval(monitoringInterval);
+  }, [fetchSystemData]);
+
+  const getAlertColor = (severity: string) => {
+    switch (severity) {
+      case 'high':
+        return 'error';
+      case 'medium':
+        return 'warning';
+      case 'low':
+        return 'info';
+      default:
+        return 'default';
     }
   };
 
-  const generateReport = () => {
-    if (!analysisResults) return;
-    ExportToPDF.generateSystemReport(analysisResults);
+  const getMetricColor = (value: number) => {
+    if (value >= 80) return 'success';
+    if (value >= 60) return 'warning';
+    return 'error';
   };
 
   return (
-    <Paper sx={{ p: 3 }}>
-      <Typography variant="h5" gutterBottom>
-        System Analysis & Optimization
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        System Analysis Dashboard
       </Typography>
 
-      <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)} sx={{ mb: 3 }}>
-        <Tab label="Performance Analysis" />
-        <Tab label="Energy Efficiency" />
-        <Tab label="Cost Analysis" />
-        <Tab label="Optimization Suggestions" />
-      </Tabs>
+      {isAnalyzing && (
+        <LinearProgress sx={{ mb: 2 }} />
+      )}
 
-      {loading ? (
-        <Box display="flex" justifyContent="center" p={3}>
-          <CircularProgress />
-        </Box>
-      ) : error ? (
-        <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
-      ) : analysisResults && (
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
+      {metrics && (
         <Grid container spacing={3}>
-          {activeTab === 0 && (
-            <Grid item xs={12}>
-              <PerformanceAnalysis data={analysisResults.performance} />
-            </Grid>
-          )}
-          {activeTab === 1 && (
-            <Grid item xs={12}>
-              <EnergyEfficiencyAnalysis data={analysisResults.energyEfficiency} />
-            </Grid>
-          )}
-          {activeTab === 2 && (
-            <Grid item xs={12}>
-              <CostAnalysis data={analysisResults.costAnalysis} />
-            </Grid>
-          )}
-          {activeTab === 3 && (
-            <Grid item xs={12}>
-              <OptimizationSuggestions suggestions={analysisResults.optimizationSuggestions} />
-            </Grid>
-          )}
+          {/* System Metrics Cards */}
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  System Metrics
+                </Typography>
+                <Stack spacing={2}>
+                  <Box>
+                    <Typography variant="body2">System Efficiency</Typography>
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={metrics.efficiency}
+                      color={getMetricColor(metrics.efficiency)}
+                    />
+                    <Typography variant="caption">{metrics.efficiency}%</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="body2">Performance Index</Typography>
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={metrics.performance}
+                      color={getMetricColor(metrics.performance)}
+                    />
+                    <Typography variant="caption">{metrics.performance}%</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="body2">Reliability Score</Typography>
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={metrics.reliability}
+                      color={getMetricColor(metrics.reliability)}
+                    />
+                    <Typography variant="caption">{metrics.reliability}%</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="body2">Maintenance Health</Typography>
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={metrics.maintenance}
+                      color={getMetricColor(metrics.maintenance)}
+                    />
+                    <Typography variant="caption">{metrics.maintenance}%</Typography>
+                  </Box>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Performance Chart */}
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  Performance Trend
+                </Typography>
+                <Box sx={{ height: 300 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={performanceData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="timestamp" />
+                      <YAxis />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="efficiency" stroke="#8884d8" />
+                      <Line type="monotone" dataKey="performance" stroke="#82ca9d" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Active Alerts */}
+          <Grid item xs={12}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  System Alerts
+                </Typography>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Severity</TableCell>
+                      <TableCell>Message</TableCell>
+                      <TableCell>Time</TableCell>
+                      <TableCell>Status</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {alerts.map((alert) => (
+                      <TableRow key={alert.id}>
+                        <TableCell>
+                          <Chip 
+                            label={alert.severity.toUpperCase()} 
+                            color={getAlertColor(alert.severity) as any}
+                            size="small"
+                          />
+                        </TableCell>
+                        <TableCell>{alert.message}</TableCell>
+                        <TableCell>{alert.timestamp}</TableCell>
+                        <TableCell>
+                          <Chip 
+                            label={alert.status}
+                            color={alert.status === 'active' ? 'error' : 'success'}
+                            size="small"
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Optimization Suggestions */}
+          <Grid item xs={12}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  Optimization Suggestions
+                </Typography>
+                <Timeline>
+                  {optimizationSuggestions.map((suggestion, index) => (
+                    <TimelineItem key={index}>
+                      <TimelineSeparator>
+                        <TimelineDot color="primary" />
+                        {index < optimizationSuggestions.length - 1 && <TimelineConnector />}
+                      </TimelineSeparator>
+                      <TimelineContent>
+                        <Typography>{suggestion}</Typography>
+                      </TimelineContent>
+                    </TimelineItem>
+                  ))}
+                </Timeline>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
       )}
 
-      <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+      <Box sx={{ mt: 2 }}>
         <Button 
           variant="contained" 
-          color="primary"
-          onClick={performAnalysis}
-          disabled={!systemData}
+          onClick={fetchSystemData}
+          disabled={isAnalyzing}
         >
-          Analyze System
-        </Button>
-        <Button 
-          variant="outlined"
-          onClick={generateReport}
-          disabled={!analysisResults}
-        >
-          Generate Report
+          Refresh Analysis
         </Button>
       </Box>
-    </Paper>
+    </Box>
   );
 };
-
-const PerformanceAnalysis: React.FC<{ data: any }> = ({ data }) => (
-  <Card>
-    <CardContent>
-      <Typography variant="h6" gutterBottom>
-        System Performance Metrics
-      </Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <Box sx={{ height: 300 }}>
-            <Line
-              data={data.performanceChart}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-              }}
-            />
-          </Box>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Typography variant="subtitle1" gutterBottom>
-            Key Performance Indicators
-          </Typography>
-          {/* Add KPI display components */}
-        </Grid>
-      </Grid>
-    </CardContent>
-  </Card>
-);
-
-// Similar components for other analysis sections...
 
 export default SystemAnalyzer;
