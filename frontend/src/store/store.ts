@@ -1,11 +1,18 @@
 import { configureStore } from '@reduxjs/toolkit';
-import chatReducer from '../features/chat/chatSlice';
+import { combineReducers } from 'redux';
 
-export const store = configureStore({
-  reducer: {
-    chat: chatReducer,
-  },
+// دمی ریدوسر برای تست
+const dummyReducer = (state = {}, action: any) => state;
+
+const rootReducer = combineReducers({
+  dummy: dummyReducer,
+  // ریدوسرهای واقعی را اینجا اضافه کنید
 });
 
-export type RootState = ReturnType<typeof store.getState>;
+export const store = configureStore({
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
+});
+
+export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;
