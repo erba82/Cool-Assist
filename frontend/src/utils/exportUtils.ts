@@ -1,9 +1,48 @@
+// src/utils/exportUtils.ts
+
+/**
+ * @author erba82
+ * @lastModified 2025-02-02 11:50:32
+ */
+
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
-import { AnalysisResult } from './systemAnalysis';
+
+// اضافه کردن تایپ autoTable به jsPDF
+declare module 'jspdf' {
+  interface jsPDF {
+    autoTable: (options: any) => any;
+    lastAutoTable: {
+      finalY: number;
+    };
+  }
+}
+
+// تعریف interface های مورد نیاز
+interface Performance {
+  cop: number;
+  capacityUtilization: number;
+}
+
+interface EnergyEfficiency {
+  annualConsumption: number;
+  efficiencyRatio: number;
+}
+
+interface CostAnalysis {
+  operatingCosts: number;
+  maintenanceCosts: number;
+  paybackPeriod: number;
+}
+
+export interface AnalysisResult {
+  performance: Performance;
+  energyEfficiency: EnergyEfficiency;
+  costAnalysis: CostAnalysis;
+}
 
 export class ExportToPDF {
-  static generateSystemReport(data: AnalysisResult) {
+  static generateSystemReport(data: AnalysisResult): void {
     const doc = new jsPDF();
     
     // Add header
