@@ -1,6 +1,22 @@
-import { MonitoringService } from '../services/monitoringService';
+// src/utils/systemAnalysis.ts
+
+/**
+ * @author erba82
+ * @lastModified 2025-02-02 11:38:16
+ */
+
+import { MonitoringService } from '../services/monitoring/MonitoringService';
 import { PerformanceService } from '../services/performance/PerformanceService';
 import { ErrorHandler } from '../services/errorHandling/ErrorHandler';
+import type {
+  Component,
+  UptimeData,
+  ErrorRateData,
+  PerformanceData,
+  SystemStatus
+} from '../types/monitoring';
+
+type ComponentStatus = 'healthy' | 'warning' | 'critical';
 
 interface SystemMetrics {
   efficiency: number;
@@ -12,28 +28,27 @@ interface SystemMetrics {
 interface ComponentHealth {
   id: string;
   name: string;
-  status: 'healthy' | 'warning' | 'critical';
-  lastMaintenance: Date;
+  status: ComponentStatus;
+  lastMaintenance?: string;
   efficiency: number;
 }
 
 export class SystemAnalysis {
-  private monitoringService: MonitoringService;
-  private performanceService: PerformanceService;
+  private static readonly MAINTENANCE_INTERVAL_DAYS = 90;
+  private static readonly CRITICAL_EFFICIENCY_THRESHOLD = 60;
+  private static readonly WARNING_EFFICIENCY_THRESHOLD = 80;
+
+  private readonly monitoringService: MonitoringService;
+  private readonly performanceService: PerformanceService;
 
   constructor() {
-    this.monitoringService = new MonitoringService();
-    this.performanceService = new PerformanceService();
+    this.monitoringService = MonitoringService.getInstance();
+    this.performanceService = PerformanceService.getInstance();
   }
 
-  async getCurrentMetrics(): Promise<SystemMetrics> {
+  public async getCurrentMetrics(): Promise<SystemMetrics> {
     try {
-      const [
-        efficiencyData,
-        performanceData,
-        reliabilityData,
-        maintenanceData
-      ] = await Promise.all([
+      const [efficiency, performance, reliability, maintenance] = await Promise.all([
         this.calculateEfficiency(),
         this.calculatePerformance(),
         this.calculateReliability(),
@@ -41,24 +56,50 @@ export class SystemAnalysis {
       ]);
 
       return {
-        efficiency: this.normalizeMetric(efficiencyData),
-        performance: this.normalizeMetric(performanceData),
-        reliability: this.normalizeMetric(reliabilityData),
-        maintenance: this.normalizeMetric(maintenanceData)
+        efficiency: this.normalizeMetric(efficiency),
+        performance: this.normalizeMetric(performance),
+        reliability: this.normalizeMetric(reliability),
+        maintenance: this.normalizeMetric(maintenance)
       };
     } catch (error) {
-      ErrorHandler.handleError(error as Error, 'SystemAnalysis.getCurrentMetrics');
+      ErrorHandler.handleError(error instanceof Error ? error : new Error(String(error)), 
+        'SystemAnalysis.getCurrentMetrics');
       throw error;
+    }
+  }
+
+  public async getComponentHealth(): Promise<ComponentHealth[]> {
+    try {
+      const status = await this.monitoringService.getComponentsStatus();
+      return status[0]?.components.map(component => ({
+        id: component.id,
+        name: component.name,
+        status: this.determineComponentStatus(component.efficiency || 0),
+        lastMaintenance: component.lastMaintenance,
+        efficiency: component.efficiency || 0
+      })) || [];
+    } catch (error) {
+      ErrorHandler.handleError(error instanceof Error ? error : new Error(String(error)), 
+        'SystemAnalysis.getComponentHealth');
+      return [];
     }
   }
 
   private async calculateEfficiency(): Promise<number> {
     try {
-      const components = await this.monitoringService.getComponentsStatus();
-      const efficiencies = components.map(c => c.efficiency);
+      const status = await this.monitoringService.getComponentsStatus();
+      const components = status[0]?.components || [];
+      if (!components.length) return 0;
+      
+      const efficiencies = components
+        .map(c => c.efficiency || 0)
+        .filter(Boolean);
+
+      if (!efficiencies.length) return 0;
       return efficiencies.reduce((acc, val) => acc + val, 0) / efficiencies.length;
     } catch (error) {
-      ErrorHandler.handleError(error as Error, 'SystemAnalysis.calculateEfficiency');
+      ErrorHandler.handleError(error instanceof Error ? error : new Error(String(error)), 
+        'SystemAnalysis.calculateEfficiency');
       return 0;
     }
   }
@@ -66,82 +107,83 @@ export class SystemAnalysis {
   private async calculatePerformance(): Promise<number> {
     try {
       const performanceData = await this.performanceService.getCurrentPerformance();
-      return performanceData.overallPerformance;
+      return performanceData.overallPerformance || 0;
     } catch (error) {
-      ErrorHandler.handleError(error as Error, 'SystemAnalysis.calculatePerformance');
+      ErrorHandler.handleError(error instanceof Error ? error : new Error(String(error)), 
+        'SystemAnalysis.calculatePerformance');
       return 0;
     }
   }
 
   private async calculateReliability(): Promise<number> {
     try {
-      const uptimeData = await this.monitoringService.getSystemUptime();
-      const errorRate = await this.monitoringService.getErrorRate();
+      const [uptimeData, errorRate] = await Promise.all([
+        this.monitoringService.getSystemUptime(),
+        this.monitoringService.getErrorRate()
+      ]);
       
-      // Calculate reliability score based on uptime and error rate
-      const uptimeScore = (uptimeData.uptime / uptimeData.totalTime) * 100;
-      const errorScore = 100 - (errorRate.errors / errorRate.totalOperations) * 100;
+      const uptimeScore = this.calculateUptimeScore(uptimeData);
+      const errorScore = this.calculateErrorScore(errorRate);
       
       return (uptimeScore + errorScore) / 2;
     } catch (error) {
-      ErrorHandler.handleError(error as Error, 'SystemAnalysis.calculateReliability');
+      ErrorHandler.handleError(error instanceof Error ? error : new Error(String(error)), 
+        'SystemAnalysis.calculateReliability');
       return 0;
     }
   }
 
   private async calculateMaintenanceHealth(): Promise<number> {
     try {
-      const components = await this.monitoringService.getComponentsStatus();
-      let totalHealth = 0;
+      const status = await this.monitoringService.getComponentsStatus();
+      const components = status[0]?.components || [];
+      if (!components.length) return 0;
 
-      components.forEach(component => {
-        const daysSinceLastMaintenance = this.getDaysSinceDate(component.lastMaintenance);
-        const maintenanceScore = this.calculateMaintenanceScore(daysSinceLastMaintenance);
-        totalHealth += maintenanceScore;
-      });
+      const maintenanceScores = components.map(component => 
+        this.calculateMaintenanceScore(
+          this.getDaysSinceDate(component.lastMaintenance)
+        )
+      );
 
-      return totalHealth / components.length;
+      return maintenanceScores.reduce((acc, score) => acc + score, 0) / maintenanceScores.length;
     } catch (error) {
-      ErrorHandler.handleError(error as Error, 'SystemAnalysis.calculateMaintenanceHealth');
+      ErrorHandler.handleError(error instanceof Error ? error : new Error(String(error)), 
+        'SystemAnalysis.calculateMaintenanceHealth');
       return 0;
     }
   }
 
-  private getDaysSinceDate(date: Date): number {
+  private calculateUptimeScore(uptimeData: UptimeData): number {
+    const uptime = uptimeData.uptime || 0;
+    const totalTime = uptimeData.totalTime || 1; // Prevent division by zero
+    return (uptime / totalTime) * 100;
+  }
+
+  private calculateErrorScore(errorRate: ErrorRateData): number {
+    const errors = errorRate.errors || 0;
+    const totalOperations = errorRate.totalOperations || 1; // Prevent division by zero
+    return 100 - (errors / totalOperations) * 100;
+  }
+
+  private getDaysSinceDate(date?: string): number {
+    if (!date) return Infinity;
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - new Date(date).getTime());
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 
   private calculateMaintenanceScore(daysSinceLastMaintenance: number): number {
-    const maxDays = 90; // Assume maintenance is needed every 90 days
-    const score = 100 - (daysSinceLastMaintenance / maxDays) * 100;
-    return Math.max(0, Math.min(100, score));
+    const score = 100 - (daysSinceLastMaintenance / SystemAnalysis.MAINTENANCE_INTERVAL_DAYS) * 100;
+    return this.normalizeMetric(score);
   }
 
   private normalizeMetric(value: number): number {
     return Math.max(0, Math.min(100, Math.round(value)));
   }
 
-  async getComponentHealth(): Promise<ComponentHealth[]> {
-    try {
-      const components = await this.monitoringService.getComponentsStatus();
-      return components.map(component => ({
-        id: component.id,
-        name: component.name,
-        status: this.determineComponentStatus(component),
-        lastMaintenance: component.lastMaintenance,
-        efficiency: component.efficiency
-      }));
-    } catch (error) {
-      ErrorHandler.handleError(error as Error, 'SystemAnalysis.getComponentHealth');
-      return [];
-    }
-  }
-
-  private determineComponentStatus(component: any): 'healthy' | 'warning' | 'critical' {
-    if (component.efficiency < 60) return 'critical';
-    if (component.efficiency < 80) return 'warning';
+  private determineComponentStatus(efficiency: number): ComponentStatus {
+    if (efficiency < SystemAnalysis.CRITICAL_EFFICIENCY_THRESHOLD) return 'critical';
+    if (efficiency < SystemAnalysis.WARNING_EFFICIENCY_THRESHOLD) return 'warning';
     return 'healthy';
   }
 }
