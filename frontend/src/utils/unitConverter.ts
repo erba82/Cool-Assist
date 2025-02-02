@@ -1,83 +1,41 @@
 // src/utils/unitConverter.ts
-export class UnitConverter {
-    private static readonly unitFactors = {
-      // دما
-      temperature: {
-        'C': 0,
-        'F': 32,
-        'K': 273.15,
-        'R': 491.67
-      },
-      // فشار
-      pressure: {
-        'kPa': 1,
-        'bar': 100,
-        'psi': 6.89476,
-        'MPa': 1000
-      },
-      // طول
-      length: {
-        'm': 1,
-        'ft': 0.3048,
-        'in': 0.0254,
-        'mm': 0.001
-      },
-      // جرم
-      mass: {
-        'kg': 1,
-        'lb': 0.453592,
-        'g': 0.001,
-        'oz': 0.0283495
-      }
-    };
-  
-    static convert(value: number, fromUnit: string, toUnit: string): number {
-      // تشخیص نوع واحد
-      const unitType = this.getUnitType(fromUnit, toUnit);
-      
-      if (unitType === 'temperature') {
-        return this.convertTemperature(value, fromUnit, toUnit);
-      }
-  
-      const fromFactor = this.unitFactors[unitType][fromUnit];
-      const toFactor = this.unitFactors[unitType][toUnit];
-      
+
+type UnitType = 'temperature' | 'pressure' | 'length' | 'mass';
+
+type TemperatureUnit = 'C' | 'F' | 'K' | 'R';
+type PressureUnit = 'kPa' | 'bar' | 'psi' | 'MPa';
+type LengthUnit = 'm' | 'ft' | 'in' | 'mm';
+type MassUnit = 'kg' | 'lb' | 'g' | 'oz';
+
+type Unit = TemperatureUnit | PressureUnit | LengthUnit | MassUnit;
+
+type UnitFactors = {
+  temperature: Record<TemperatureUnit, number>;
+  pressure: Record<PressureUnit, number>;
+  length: Record<LengthUnit, number>;
+  mass: Record<MassUnit, number>;
+};
+
+class UnitConverter {
+  private unitFactors: UnitFactors = {
+    temperature: { C: 1, F: 1.8, K: 1, R: 1.8 },
+    pressure: { kPa: 1, bar: 100, psi: 6.895, MPa: 1000 },
+    length: { m: 1, ft: 0.3048, in: 0.0254, mm: 0.001 },
+    mass: { kg: 1, lb: 0.4536, g: 0.001, oz: 0.02835 }
+  };
+
+  convert(value: number, fromUnit: Unit, toUnit: Unit, unitType: UnitType): number {
+    try {
+      const fromFactor = this.unitFactors[unitType][fromUnit as keyof typeof this.unitFactors[typeof unitType]];
+      const toFactor = this.unitFactors[unitType][toUnit as keyof typeof this.unitFactors[typeof unitType]];
+
       return (value * fromFactor) / toFactor;
-    }
-  
-    private static convertTemperature(value: number, fromUnit: string, toUnit: string): number {
-      let kelvin: number;
-  
-      // تبدیل به کلوین
-      switch (fromUnit) {
-        case 'C':
-          kelvin = value + 273.15;
-          break;
-        case 'F':
-          kelvin = (value + 459.67) * 5/9;
-          break;
-        case 'K':
-          kelvin = value;
-          break;
-        case 'R':
-          kelvin = value * 5/9;
-          break;
-        default:
-          throw new Error('Invalid temperature unit');
-      }
-  
-      // تبدیل از کلوین
-      switch (toUnit) {
-        case 'C':
-          return kelvin - 273.15;
-        case 'F':
-          return kelvin * 9/5 - 459.67;
-        case 'K':
-          return kelvin;
-        case 'R':
-          return kelvin * 9/5;
-        default:
-          throw new Error('Invalid temperature unit');
-      }
+    } catch (error) {
+      throw new Error(`Invalid conversion: ${fromUnit} to ${toUnit} for type ${unitType}`);
     }
   }
+
+  // اگر متدهای دیگری دارید، اینجا اضافه کنید
+}
+
+export default UnitConverter;

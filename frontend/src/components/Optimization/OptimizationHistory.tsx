@@ -24,21 +24,7 @@ import {
   KeyboardArrowDown as ExpandMoreIcon,
   KeyboardArrowUp as ExpandLessIcon,
 } from '@mui/icons-material';
-
-export class PerformanceOptimizer {
-  private static instance: PerformanceOptimizer;
-  private constructor() {}
-  public static getInstance(): PerformanceOptimizer {
-    if (!PerformanceOptimizer.instance) {
-      PerformanceOptimizer.instance = new PerformanceOptimizer();
-    }
-    return PerformanceOptimizer.instance;
-  }
-  public async getOptimizationHistory(): Promise<OptimizationRecord[]> {
-    // Implement your history fetching logic here
-    return [];
-  }
-}
+import { PerformanceOptimizer } from '../../services/optimization/PerformanceOptimizer';
 
 interface OptimizationRecord {
   id: string;

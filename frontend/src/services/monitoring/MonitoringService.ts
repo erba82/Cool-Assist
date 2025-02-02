@@ -1,37 +1,19 @@
-import { ApiService } from '../api';
+/**
+ * @author erba82
+ * @lastModified 2025-02-02 10:51:30
+ */
+
+import { apiService } from '../api/index';
 import { ErrorHandler } from '../errorHandling/ErrorHandler';
-
-interface SystemStatus {
-  componentId: string;
-  name: string;
-  status: 'healthy' | 'warning' | 'critical';
-  lastMaintenance: Date;
-  efficiency: number;
-  temperature: number;
-  pressure: number;
-  powerConsumption: number;
-  runtime: number;
-}
-
-interface Alert {
-  id: string;
-  severity: 'low' | 'medium' | 'high';
-  message: string;
-  timestamp: Date;
-  componentId: string;
-  status: 'active' | 'resolved';
-  metadata: Record<string, any>;
-}
-
-interface PerformanceMetrics {
-  timestamp: Date;
-  efficiency: number;
-  powerConsumption: number;
-  temperature: number;
-  pressure: number;
-  flowRate: number;
-  humidity: number;
-}
+import {
+  SystemStatus,
+  SystemStatusResponse,
+  Alert,
+  PerformanceMetrics,
+  UptimeData,
+  ErrorRateData,
+  Component
+} from '../../types/monitoring';
 
 export class MonitoringService {
   private static instance: MonitoringService;
@@ -40,6 +22,7 @@ export class MonitoringService {
   private readonly WS_RECONNECT_DELAY = 5000;
   private metricsBuffer: PerformanceMetrics[] = [];
   private readonly BUFFER_SIZE = 1000;
+  private isConnecting: boolean = false;
 
   private constructor() {
     this.initializeWebSocket();
@@ -53,46 +36,82 @@ export class MonitoringService {
     return MonitoringService.instance;
   }
 
-  private initializeWebSocket(): void {
+  private async initializeWebSocket(): Promise<void> {
+    if (this.isConnecting) return;
+
     try {
-      const wsUrl = `${process.env.REACT_APP_WS_URL}/monitoring`;
+      this.isConnecting = true;
+      const wsUrl = `${process.env.REACT_APP_WS_URL || 'ws://localhost:3001'}/monitoring`;
       this.wsConnection = new WebSocket(wsUrl);
 
-      this.wsConnection.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === 'alert') {
-          this.notifyAlertHandlers(data.alert);
+      this.wsConnection.onopen = () => {
+        console.log('Monitoring WebSocket connected');
+        this.isConnecting = false;
+      };
+
+      this.wsConnection.onmessage = (event: MessageEvent) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'alert') {
+            this.notifyAlertHandlers(data.alert as Alert);
+          }
+        } catch (error) {
+          ErrorHandler.handleError(error as Error, 'MonitoringService.wsOnMessage');
         }
       };
 
       this.wsConnection.onclose = () => {
+        this.isConnecting = false;
+        console.log('Monitoring WebSocket disconnected, attempting to reconnect...');
         setTimeout(() => this.initializeWebSocket(), this.WS_RECONNECT_DELAY);
       };
 
+      this.wsConnection.onerror = (event: Event) => {
+        this.isConnecting = false;
+        const error = new Error('WebSocket connection error');
+        error.name = 'WebSocketError';
+        error.cause = event;
+        ErrorHandler.handleError(error, 'MonitoringService.wsError');
+      };
+
     } catch (error) {
+      this.isConnecting = false;
       ErrorHandler.handleError(error as Error, 'MonitoringService.initializeWebSocket');
     }
   }
 
   async getComponentsStatus(): Promise<SystemStatus[]> {
     try {
-      const response = await ApiService.get('/monitoring/components/status');
-      return response.data.map((status: SystemStatus) => ({
-        ...status,
-        lastMaintenance: new Date(status.lastMaintenance)
-      }));
+      const response = await apiService.get<{ data: SystemStatusResponse[] }>('/monitoring/components/status');
+      return response.data.data.map((status: SystemStatusResponse) => this.mapToSystemStatus(status));
     } catch (error) {
       ErrorHandler.handleError(error as Error, 'MonitoringService.getComponentsStatus');
       return [];
     }
   }
 
+  private mapToSystemStatus(status: SystemStatusResponse): SystemStatus {
+    return {
+      ...status,
+      timestamp: status.timestamp,
+      lastMaintenance: status.lastMaintenance,
+      components: status.components.map(component => this.mapComponent(component))
+    };
+  }
+
+  private mapComponent(component: Component): Component {
+    return {
+      ...component,
+      lastMaintenance: component.lastMaintenance
+    };
+  }
+
   async getActiveAlerts(): Promise<Alert[]> {
     try {
-      const response = await ApiService.get('/monitoring/alerts/active');
-      return response.data.map((alert: Alert) => ({
+      const response = await apiService.get<{ data: Alert[] }>('/monitoring/alerts/active');
+      return response.data.data.map(alert => ({
         ...alert,
-        timestamp: new Date(alert.timestamp)
+        timestamp: alert.timestamp // No need to convert to Date anymore
       }));
     } catch (error) {
       ErrorHandler.handleError(error as Error, 'MonitoringService.getActiveAlerts');
@@ -112,8 +131,12 @@ export class MonitoringService {
         metrics: metrics.join(',')
       };
 
-      const response = await ApiService.get('/monitoring/performance/history', { params });
-      return response.data.map((metric: PerformanceMetrics) => ({
+      const response = await apiService.get<{ data: PerformanceMetrics[] }>(
+        '/monitoring/performance/history',
+        { params }
+      );
+
+      return response.data.data.map(metric => ({
         ...metric,
         timestamp: new Date(metric.timestamp)
       }));
@@ -123,28 +146,49 @@ export class MonitoringService {
     }
   }
 
-  async getSystemUptime(): Promise<{ uptime: number; totalTime: number }> {
+  async getSystemUptime(): Promise<UptimeData> {
     try {
-      const response = await ApiService.get('/monitoring/system/uptime');
-      return response.data;
+      const response = await apiService.get<{ data: UptimeData }>('/monitoring/system/uptime');
+      return {
+        ...response.data.data,
+        timestamp: new Date(),
+        lastDowntime: response.data.data.lastDowntime // No need to convert to Date anymore
+      };
     } catch (error) {
       ErrorHandler.handleError(error as Error, 'MonitoringService.getSystemUptime');
-      return { uptime: 0, totalTime: 0 };
+      return {
+        timestamp: new Date(),
+        uptime: 0,
+        totalTime: 0
+      };
     }
   }
 
-  async getErrorRate(): Promise<{ errors: number; totalOperations: number }> {
+  async getErrorRate(): Promise<ErrorRateData> {
     try {
-      const response = await ApiService.get('/monitoring/system/error-rate');
-      return response.data;
+      const response = await apiService.get<{ data: ErrorRateData }>('/monitoring/system/error-rate');
+      return {
+        ...response.data.data,
+        timestamp: new Date()
+      };
     } catch (error) {
       ErrorHandler.handleError(error as Error, 'MonitoringService.getErrorRate');
-      return { errors: 0, totalOperations: 0 };
+      return {
+        timestamp: new Date(),
+        total: 0,
+        critical: 0,
+        warning: 0,
+        errorRate: 0,
+        errors: 0,
+        totalOperations: 0
+      };
     }
   }
 
   registerAlertHandler(handler: (alert: Alert) => void): void {
-    this.alertHandlers.push(handler);
+    if (!this.alertHandlers.includes(handler)) {
+      this.alertHandlers.push(handler);
+    }
   }
 
   unregisterAlertHandler(handler: (alert: Alert) => void): void {
@@ -162,8 +206,12 @@ export class MonitoringService {
   }
 
   private startPerformanceLogging(): void {
-    setInterval(() => {
-      this.logCurrentPerformance();
+    setInterval(async () => {
+      try {
+        await this.logCurrentPerformance();
+      } catch (error) {
+        ErrorHandler.handleError(error as Error, 'MonitoringService.startPerformanceLogging');
+      }
     }, 60000); // Log every minute
   }
 
@@ -182,9 +230,9 @@ export class MonitoringService {
 
   private async getCurrentMetrics(): Promise<PerformanceMetrics> {
     try {
-      const response = await ApiService.get('/monitoring/metrics/current');
+      const response = await apiService.get<{ data: PerformanceMetrics }>('/monitoring/metrics/current');
       return {
-        ...response.data,
+        ...response.data.data,
         timestamp: new Date()
       };
     } catch (error) {
@@ -194,10 +242,11 @@ export class MonitoringService {
   }
 
   private async flushMetricsBuffer(): Promise<void> {
-    try {
-      if (this.metricsBuffer.length === 0) return;
 
-      await ApiService.post('/monitoring/metrics/bulk', {
+    if (this.metricsBuffer.length === 0) return;
+
+    try {
+      await apiService.post('/monitoring/metrics/bulk', {
         metrics: this.metricsBuffer
       });
 
@@ -211,6 +260,7 @@ export class MonitoringService {
     try {
       await this.flushMetricsBuffer();
       this.wsConnection?.close();
+      this.alertHandlers = [];
     } catch (error) {
       ErrorHandler.handleError(error as Error, 'MonitoringService.cleanup');
     }

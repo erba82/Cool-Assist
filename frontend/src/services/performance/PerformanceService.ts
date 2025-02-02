@@ -1,50 +1,34 @@
-import { ApiService } from '../api';
+// src/services/PerformanceService.ts
+
+/**
+ * @author erba82
+ * @lastModified 2025-02-02 10:59:20
+ */
+
+import { apiService } from '../api/index';
 import { ErrorHandler } from '../errorHandling/ErrorHandler';
 import { MonitoringService } from '../monitoring/MonitoringService';
-
-interface PerformanceData {
-  timestamp: Date;
-  overallPerformance: number;
-  metrics: {
-    cpu: number;
-    memory: number;
-    responseTime: number;
-    throughput: number;
-    errorRate: number;
-    availability: number;
-  };
-  components: {
-    [key: string]: {
-      status: 'healthy' | 'warning' | 'critical';
-      performance: number;
-      loadFactor: number;
-      efficiency: number;
-    };
-  };
-}
-
-interface PerformanceThresholds {
-  cpu: { warning: number; critical: number };
-  memory: { warning: number; critical: number };
-  responseTime: { warning: number; critical: number };
-  errorRate: { warning: number; critical: number };
-}
+import {
+  PerformanceData,
+  PerformanceThresholds,
+  Alert,
+  PerformanceMetrics
+} from '../../types/monitoring';
 
 export class PerformanceService {
   private static instance: PerformanceService;
   private monitoringService: MonitoringService;
   private performanceHistory: PerformanceData[] = [];
   private readonly MAX_HISTORY_LENGTH = 1000;
-  private thresholds: PerformanceThresholds;
+  private thresholds: PerformanceThresholds = {
+    cpu: { warning: 70, critical: 90 },
+    memory: { warning: 80, critical: 95 },
+    responseTime: { warning: 2000, critical: 5000 },
+    errorRate: { warning: 5, critical: 10 }
+  };
 
   private constructor() {
     this.monitoringService = MonitoringService.getInstance();
-    this.thresholds = {
-      cpu: { warning: 70, critical: 90 },
-      memory: { warning: 80, critical: 95 },
-      responseTime: { warning: 2000, critical: 5000 },
-      errorRate: { warning: 5, critical: 10 }
-    };
     this.initializeService();
   }
 
@@ -57,26 +41,64 @@ export class PerformanceService {
 
   private async initializeService(): Promise<void> {
     try {
-      // Load custom thresholds from configuration
-      await this.loadThresholds();
+      await Promise.all([
+        this.loadInitialThresholds(),
+        this.loadInitialHistory()
+      ]);
       
-      // Start performance monitoring
-      this.startPerformanceMonitoring();
-      
-      // Register alert handlers
-      this.registerAlertHandlers();
+      this.initPerformanceMonitoring();
+      this.initAlertHandlers();
     } catch (error) {
       ErrorHandler.handleError(error as Error, 'PerformanceService.initializeService');
     }
   }
 
+  private async loadInitialThresholds(): Promise<void> {
+    try {
+      const response = await apiService.get<{ data: PerformanceThresholds }>('/performance/thresholds');
+      this.thresholds = response.data.data;
+    } catch (error) {
+      ErrorHandler.handleError(error as Error, 'PerformanceService.loadInitialThresholds');
+      // Keep default thresholds if loading fails
+    }
+  }
+
+  private async loadInitialHistory(): Promise<void> {
+    try {
+      const endDate = new Date();
+      const startDate = new Date(endDate.getTime() - (24 * 60 * 60 * 1000)); // Last 24 hours
+      const history = await this.getPerformanceHistory(startDate, endDate);
+      this.performanceHistory = history;
+    } catch (error) {
+      ErrorHandler.handleError(error as Error, 'PerformanceService.loadInitialHistory');
+    }
+  }
+
+  private initPerformanceMonitoring(): void {
+    setInterval(async () => {
+      try {
+        await this.getCurrentPerformance();
+      } catch (error) {
+        ErrorHandler.handleError(error as Error, 'PerformanceService.monitoringInterval');
+      }
+    }, 60000); // Monitor every minute
+  }
+
+  private initAlertHandlers(): void {
+    this.monitoringService.registerAlertHandler((alert: Alert) => {
+      if (alert.severity === 'high') {
+        this.handleCriticalAlert(alert);
+      }
+    });
+  }
+
   async getCurrentPerformance(): Promise<PerformanceData> {
     try {
-      const response = await ApiService.get('/performance/current');
-      const performanceData = this.processPerformanceData(response.data);
+      const response = await apiService.get<{ data: PerformanceData }>('/performance/current');
+      const performanceData = this.processPerformanceData(response.data.data);
       
       this.updatePerformanceHistory(performanceData);
-      this.analyzePerformance(performanceData);
+      await this.checkPerformanceIssues(performanceData);
       
       return performanceData;
     } catch (error) {
@@ -95,209 +117,149 @@ export class PerformanceService {
         end: endDate?.toISOString()
       };
 
-      const response = await ApiService.get('/performance/history', { params });
-      return response.data.map((data: any) => this.processPerformanceData(data));
+      const response = await apiService.get<{ data: PerformanceData[] }>(
+        '/performance/history',
+        { params }
+      );
+
+      return response.data.data.map((data: PerformanceData) => this.processPerformanceData(data));
     } catch (error) {
       ErrorHandler.handleError(error as Error, 'PerformanceService.getPerformanceHistory');
       return [];
     }
   }
 
-  async analyzePerformanceTrends(days: number = 30): Promise<any> {
-    try {
-      const endDate = new Date();
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - days);
-
-      const history = await this.getPerformanceHistory(startDate, endDate);
-      
-      return {
-        averagePerformance: this.calculateAveragePerformance(history),
-        trends: this.identifyTrends(history),
-        bottlenecks: this.identifyBottlenecks(history),
-        recommendations: await this.generateRecommendations(history)
-      };
-    } catch (error) {
-      ErrorHandler.handleError(error as Error, 'PerformanceService.analyzePerformanceTrends');
-      throw error;
-    }
-  }
-
-  private processPerformanceData(data: any): PerformanceData {
+  private processPerformanceData(data: PerformanceData): PerformanceData {
     return {
       ...data,
-      timestamp: new Date(data.timestamp)
+      timestamp: new Date(data.timestamp),
+      metrics: {
+        ...data.metrics,
+        cpu: Math.round(data.metrics.cpu * 100) / 100,
+        memory: Math.round(data.metrics.memory * 100) / 100,
+        responseTime: Math.round(data.metrics.responseTime),
+        errorRate: Math.round(data.metrics.errorRate * 100) / 100
+      }
     };
   }
 
   private updatePerformanceHistory(performanceData: PerformanceData): void {
     this.performanceHistory.push(performanceData);
-    if (this.performanceHistory.length > this.MAX_HISTORY_LENGTH) {
+    
+    while (this.performanceHistory.length > this.MAX_HISTORY_LENGTH) {
       this.performanceHistory.shift();
     }
   }
 
-  private analyzePerformance(performanceData: PerformanceData): void {
-    // Check for performance issues
-    const issues = this.checkPerformanceIssues(performanceData);
+  private async checkPerformanceIssues(data: PerformanceData): Promise<void> {
+    const issues = this.detectPerformanceIssues(data);
     
-    // Generate alerts for critical issues
-    issues.forEach(issue => {
+    for (const issue of issues) {
       if (issue.severity === 'critical') {
-        this.monitoringService.registerAlertHandler((alert) => {
-          console.log('Performance Alert:', alert);
+        await this.handleCriticalAlert({
+          id: `perf_${Date.now()}`,
+          severity: 'high',
+          message: issue.message,
+          timestamp: new Date().toISOString(),
+          componentId: 'performance',
+          status: 'active',
+          metadata: {
+            metricType: issue.type,
+            value: issue.value
+          }
         });
       }
-    });
+    }
   }
 
-  private checkPerformanceIssues(data: PerformanceData): Array<{
+  private detectPerformanceIssues(data: PerformanceData): Array<{
     type: string;
     severity: 'warning' | 'critical';
     message: string;
+    value: number;
   }> {
-    const issues = [];
-
-    // Check CPU usage
+    const issues: Array<{
+      type: string;
+      severity: 'warning' | 'critical';
+      message: string;
+      value: number;
+    }> = [];
+  
+    // CPU Check
     if (data.metrics.cpu >= this.thresholds.cpu.critical) {
       issues.push({
         type: 'cpu',
-        severity: 'critical',
-        message: `High CPU usage: ${data.metrics.cpu}%`
+        severity: 'critical' as const, // explicitly specify as literal type
+        message: `Critical CPU usage: ${data.metrics.cpu}%`,
+        value: data.metrics.cpu
       });
     } else if (data.metrics.cpu >= this.thresholds.cpu.warning) {
       issues.push({
         type: 'cpu',
-        severity: 'warning',
-        message: `Elevated CPU usage: ${data.metrics.cpu}%`
+        severity: 'warning' as const,
+        message: `High CPU usage: ${data.metrics.cpu}%`,
+        value: data.metrics.cpu
       });
     }
-
-    // Check Memory usage
+  
+    // Memory Check
     if (data.metrics.memory >= this.thresholds.memory.critical) {
       issues.push({
         type: 'memory',
-        severity: 'critical',
-        message: `High memory usage: ${data.metrics.memory}%`
+        severity: 'critical' as const,
+        message: `Critical memory usage: ${data.metrics.memory}%`,
+        value: data.metrics.memory
       });
     } else if (data.metrics.memory >= this.thresholds.memory.warning) {
       issues.push({
         type: 'memory',
-        severity: 'warning',
-        message: `Elevated memory usage: ${data.metrics.memory}%`
+        severity: 'warning' as const,
+        message: `High memory usage: ${data.metrics.memory}%`,
+        value: data.metrics.memory
       });
     }
-
-    // Check Response Time
+  
+    // Response Time Check
     if (data.metrics.responseTime >= this.thresholds.responseTime.critical) {
       issues.push({
         type: 'responseTime',
-        severity: 'critical',
-        message: `High response time: ${data.metrics.responseTime}ms`
+        severity: 'critical' as const,
+        message: `Critical response time: ${data.metrics.responseTime}ms`,
+        value: data.metrics.responseTime
+      });
+    } else if (data.metrics.responseTime >= this.thresholds.responseTime.warning) {
+      issues.push({
+        type: 'responseTime',
+        severity: 'warning' as const,
+        message: `High response time: ${data.metrics.responseTime}ms`,
+        value: data.metrics.responseTime
       });
     }
-
+  
+    // Error Rate Check
+    if (data.metrics.errorRate >= this.thresholds.errorRate.critical) {
+      issues.push({
+        type: 'errorRate',
+        severity: 'critical' as const,
+        message: `Critical error rate: ${data.metrics.errorRate}%`,
+        value: data.metrics.errorRate
+      });
+    } else if (data.metrics.errorRate >= this.thresholds.errorRate.warning) {
+      issues.push({
+        type: 'errorRate',
+        severity: 'warning' as const,
+        message: `High error rate: ${data.metrics.errorRate}%`,
+        value: data.metrics.errorRate
+      });
+    }
+  
     return issues;
   }
 
-  private async loadThresholds(): Promise<void> {
+  private async handleCriticalAlert(alert: Alert): Promise<void> {
     try {
-      const response = await ApiService.get('/performance/thresholds');
-      this.thresholds = response.data;
-    } catch (error) {
-      ErrorHandler.handleError(error as Error, 'PerformanceService.loadThresholds');
-    }
-  }
-
-  private calculateAveragePerformance(history: PerformanceData[]): number {
-    if (history.length === 0) return 0;
-    
-    const sum = history.reduce((acc, data) => acc + data.overallPerformance, 0);
-    return sum / history.length;
-  }
-
-  private identifyTrends(history: PerformanceData[]): any {
-    const trends = {
-      performance: this.calculateTrend(history.map(h => h.overallPerformance)),
-      cpu: this.calculateTrend(history.map(h => h.metrics.cpu)),
-      memory: this.calculateTrend(history.map(h => h.metrics.memory)),
-      responseTime: this.calculateTrend(history.map(h => h.metrics.responseTime))
-    };
-
-    return trends;
-  }
-
-  private calculateTrend(values: number[]): 'increasing' | 'decreasing' | 'stable' {
-    if (values.length < 2) return 'stable';
-
-    const changes = values.slice(1).map((value, index) => value - values[index]);
-    const averageChange = changes.reduce((a, b) => a + b, 0) / changes.length;
-
-    if (averageChange > 0.05) return 'increasing';
-    if (averageChange < -0.05) return 'decreasing';
-    return 'stable';
-  }
-
-  private identifyBottlenecks(history: PerformanceData[]): any {
-    const bottlenecks = [];
-    const latestData = history[history.length - 1];
-
-    // Check each component for potential bottlenecks
-    Object.entries(latestData.components).forEach(([component, data]) => {
-      if (data.loadFactor > 0.8) {
-        bottlenecks.push({
-          component,
-          loadFactor: data.loadFactor,
-          efficiency: data.efficiency
-        });
-      }
-    });
-
-    return bottlenecks;
-  }
-
-  private async generateRecommendations(history: PerformanceData[]): Promise<string[]> {
-    const recommendations = [];
-    const trends = this.identifyTrends(history);
-    const bottlenecks = this.identifyBottlenecks(history);
-
-    // Add recommendations based on trends
-    if (trends.performance === 'decreasing') {
-      recommendations.push('System performance is degrading. Consider scaling resources.');
-    }
-
-    // Add recommendations based on bottlenecks
-    bottlenecks.forEach(bottleneck => {
-      recommendations.push(
-        `Component ${bottleneck.component} is experiencing high load (${bottleneck.loadFactor * 100}%). Consider optimization.`
-      );
-    });
-
-    return recommendations;
-  }
-
-  private startPerformanceMonitoring(): void {
-    setInterval(async () => {
-      try {
-        await this.getCurrentPerformance();
-      } catch (error) {
-        ErrorHandler.handleError(error as Error, 'PerformanceService.startPerformanceMonitoring');
-      }
-    }, 60000); // Monitor every minute
-  }
-
-  private registerAlertHandlers(): void {
-    this.monitoringService.registerAlertHandler((alert) => {
-      if (alert.severity === 'high') {
-        this.handleCriticalAlert(alert);
-      }
-    });
-  }
-
-  private async handleCriticalAlert(alert: any): Promise<void> {
-    try {
-      await ApiService.post('/performance/alerts/critical', { alert });
-      // Implement additional critical alert handling logic
+      await apiService.post('/performance/alerts/critical', { alert });
+      // Additional critical alert handling logic can be added here
     } catch (error) {
       ErrorHandler.handleError(error as Error, 'PerformanceService.handleCriticalAlert');
     }

@@ -1,6 +1,6 @@
 import { MonitoringService } from '../monitoring/MonitoringService';
 import { ErrorHandler } from '../errorHandling/ErrorHandler';
-import { ApiService } from '../api';
+import { apiService } from '../api/index';
 
 interface OptimizationParameter {
   name: string;
@@ -92,7 +92,7 @@ export class PerformanceOptimizer {
 
   private async getCurrentParameters(): Promise<OptimizationParameter[]> {
     try {
-      const response = await ApiService.get('/optimization/parameters');
+      const response = await apiService.get('/optimization/parameters');
       return response.data;
     } catch (error) {
       ErrorHandler.handleError(error as Error, 'PerformanceOptimizer.getCurrentParameters');
@@ -178,7 +178,7 @@ export class PerformanceOptimizer {
   ): Promise<number | null> {
     try {
       // Use machine learning model for prediction
-      const response = await ApiService.post('/optimization/predict', {
+      const response = await apiService.post('/optimization/predict', {
         parameter,
         historicalImpact,
         currentMetrics
