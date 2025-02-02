@@ -1,4 +1,10 @@
 // src/theme/index.ts
+
+/**
+ * @author erba82
+ * @lastModified 2025-02-02 12:20:31
+ */
+
 import { createTheme } from '@mui/material/styles';
 
 export const theme = createTheme({
@@ -34,34 +40,3 @@ export const theme = createTheme({
     }
   }
 });
-
-// src/components/Layout/Dashboard.tsx
-import React from 'react';
-import {
-  Box,
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText
-} from '@mui/material';
-
-const Dashboard: React.FC = ({ children }) => {
-  return (
-    <Box sx={{ display: 'flex' }}>
-      <AppBar position="fixed">
-        {/* AppBar content */}
-      </AppBar>
-      <Drawer variant="permanent">
-        {/* Navigation menu */}
-      </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        {children}
-      </Box>
-    </Box>
-  );
-};
