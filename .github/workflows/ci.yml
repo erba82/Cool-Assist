@@ -20,16 +20,16 @@ jobs:
           node-version: 16
 
       - name: Install Dependencies
-        run: npm install
+        run: yarn install
 
-      - name: Run npm audit fix
-        run: npm audit fix || true
+      - name: Run yarn audit fix
+        run: yarn audit fix || true
 
       - name: Run Lint
-        run: npm run lint
+        run: yarn lint
 
       - name: Run Tests
-        run: npm test -- --watchAll=false
+        run: yarn test --watchAll=false
 
       - name: Build Project
-        run: npm run build
+        run: yarn build
