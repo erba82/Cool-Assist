@@ -17,7 +17,7 @@ import {
   Alert
 } from '@mui/material';
 import { generateSystemDesign, DesignRequirements, SystemDesign } from '../../utils/systemDesigner';
-import DesignViewer from './DesignViewer';
+import DesignViewer from '../../DesignViewer/DesignViewer';
 
 const steps = [
   'Project Requirements',
@@ -167,6 +167,80 @@ const ProjectRequirements: React.FC<{
   </Grid>
 );
 
-// Similar components for SpaceDetails and SystemSpecs...
+const SpaceDetails: React.FC<{
+  requirements: DesignRequirements;
+  setRequirements: (req: DesignRequirements) => void;
+}> = ({ requirements, setRequirements }) => (
+  <Grid container spacing={3}>
+    <Grid item xs={12} md={4}>
+      <TextField
+        fullWidth
+        label="Length (m)"
+        type="number"
+        value={requirements.dimensions.length || ''}
+        onChange={(e) => setRequirements({
+          ...requirements,
+          dimensions: { ...requirements.dimensions, length: Number(e.target.value) }
+        })}
+      />
+    </Grid>
+    <Grid item xs={12} md={4}>
+      <TextField
+        fullWidth
+        label="Width (m)"
+        type="number"
+        value={requirements.dimensions.width || ''}
+        onChange={(e) => setRequirements({
+          ...requirements,
+          dimensions: { ...requirements.dimensions, width: Number(e.target.value) }
+        })}
+      />
+    </Grid>
+    <Grid item xs={12} md={4}>
+      <TextField
+        fullWidth
+        label="Height (m)"
+        type="number"
+        value={requirements.dimensions.height || ''}
+        onChange={(e) => setRequirements({
+          ...requirements,
+          dimensions: { ...requirements.dimensions, height: Number(e.target.value) }
+        })}
+      />
+    </Grid>
+  </Grid>
+);
+
+const SystemSpecs: React.FC<{
+  requirements: DesignRequirements;
+  setRequirements: (req: DesignRequirements) => void;
+}> = ({ requirements, setRequirements }) => (
+  <Grid container spacing={3}>
+    <Grid item xs={12} md={6}>
+      <TextField
+        fullWidth
+        label="Ambient Temperature (°C)"
+        type="number"
+        value={requirements.temperature.ambient || ''}
+        onChange={(e) => setRequirements({
+          ...requirements,
+          temperature: { ...requirements.temperature, ambient: Number(e.target.value) }
+        })}
+      />
+    </Grid>
+    <Grid item xs={12} md={6}>
+      <TextField
+        fullWidth
+        label="Required Temperature (°C)"
+        type="number"
+        value={requirements.temperature.required || ''}
+        onChange={(e) => setRequirements({
+          ...requirements,
+          temperature: { ...requirements.temperature, required: Number(e.target.value) }
+        })}
+      />
+    </Grid>
+  </Grid>
+);
 
 export default AutomaticSystemDesigner;
