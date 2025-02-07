@@ -1,4 +1,6 @@
-import { ApiService } from './api';
+// F:\Cool-Assist\frontend\src\services\authService.ts
+
+import { apiService } from './api/index';
 import { SecurityService } from './security/SecurityService';
 import { ErrorHandler } from './errorHandling/ErrorHandler';
 
@@ -21,6 +23,7 @@ export class AuthService {
   private static readonly TOKEN_KEY = 'auth_tokens';
   private static readonly USER_KEY = 'user_data';
   private static readonly LINKEDIN_STATE_KEY = 'linkedin_auth_state';
+  private static readonly GOOGLE_STATE_KEY = 'google_auth_state';
   private static tokenRefreshTimeout: NodeJS.Timeout | null = null;
 
   static async signUpWithEmail(data: { 
@@ -29,7 +32,8 @@ export class AuthService {
     fullName: string; 
   }): Promise<User> {
     try {
-      const response = await ApiService.post('/auth/signup', data);
+      // استفاده از جنریک برای مشخص کردن تایپ خروجی
+      const response = await apiService.post<{ user: User; tokens: AuthToken }>('/auth/signup', data);
       const { user, tokens } = response.data;
 
       await this.setTokens(tokens);
@@ -50,10 +54,10 @@ export class AuthService {
       const scope = 'r_emailaddress r_liteprofile r_basicprofile';
       const state = SecurityService.generateSecureToken(32);
       
-      // Save state for CSRF protection
+      // ذخیره state جهت محافظت CSRF
       localStorage.setItem(this.LINKEDIN_STATE_KEY, state);
 
-      // Construct LinkedIn OAuth URL
+      // ساخت URL احراز هویت LinkedIn
       const linkedInAuthUrl = new URL('https://www.linkedin.com/oauth/v2/authorization');
       linkedInAuthUrl.searchParams.append('response_type', 'code');
       linkedInAuthUrl.searchParams.append('client_id', clientId!);
@@ -61,7 +65,7 @@ export class AuthService {
       linkedInAuthUrl.searchParams.append('scope', scope);
       linkedInAuthUrl.searchParams.append('state', state);
 
-      // Redirect to LinkedIn
+      // هدایت به LinkedIn
       window.location.href = linkedInAuthUrl.toString();
     } catch (error) {
       ErrorHandler.handleError(error as Error, 'AuthService.signUpWithLinkedIn');
@@ -69,16 +73,42 @@ export class AuthService {
     }
   }
 
+  static async googleSignUp(): Promise<void> {
+    try {
+      const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+      const redirectUri = `${window.location.origin}/auth/google/callback`;
+      const scope = 'openid email profile';
+      const state = SecurityService.generateSecureToken(32);
+
+      // ذخیره state جهت محافظت CSRF
+      localStorage.setItem(this.GOOGLE_STATE_KEY, state);
+
+      // ساخت URL احراز هویت گوگل
+      const googleAuthUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+      googleAuthUrl.searchParams.append('response_type', 'code');
+      googleAuthUrl.searchParams.append('client_id', clientId!);
+      googleAuthUrl.searchParams.append('redirect_uri', redirectUri);
+      googleAuthUrl.searchParams.append('scope', scope);
+      googleAuthUrl.searchParams.append('state', state);
+
+      // هدایت به گوگل
+      window.location.href = googleAuthUrl.toString();
+    } catch (error) {
+      ErrorHandler.handleError(error as Error, 'AuthService.googleSignUp');
+      throw error;
+    }
+  }
+
   static async handleLinkedInCallback(code: string, state: string): Promise<User> {
     try {
-      // Verify state to prevent CSRF attacks
+      // بررسی state برای جلوگیری از حملات CSRF
       const savedState = localStorage.getItem(this.LINKEDIN_STATE_KEY);
       if (!savedState || state !== savedState) {
         throw new Error('Invalid state parameter');
       }
 
-      // Exchange code for tokens
-      const response = await ApiService.post('/auth/linkedin/callback', {
+      // مبادله کد برای دریافت توکن‌ها
+      const response = await apiService.post<{ user: User; tokens: AuthToken }>('/auth/linkedin/callback', {
         code,
         state,
         redirectUri: `${window.location.origin}/auth/linkedin/callback`
@@ -86,7 +116,7 @@ export class AuthService {
 
       const { user, tokens } = response.data;
 
-      // Store authentication data
+      // ذخیره اطلاعات احراز هویت
       await this.setTokens(tokens);
       await this.setUser(user);
       this.setupTokenRefresh(tokens.expiresIn);
@@ -102,8 +132,9 @@ export class AuthService {
 
   static async updateUserProfile(userId: string): Promise<void> {
     try {
-      const response = await ApiService.get(`/users/${userId}/linkedin-profile`);
-      const user = response.data;
+      // استفاده از جنریک برای مشخص کردن تایپ خروجی
+      const response = await apiService.get<{ user: User }>(`/users/${userId}/linkedin-profile`);
+      const user = response.data.user;
       await this.setUser(user);
     } catch (error) {
       ErrorHandler.handleError(error as Error, 'AuthService.updateUserProfile');
@@ -150,7 +181,7 @@ export class AuthService {
     try {
       const tokens = await this.getTokens();
       if (tokens?.refreshToken) {
-        await ApiService.post('/auth/logout', { refreshToken: tokens.refreshToken });
+        await apiService.post('/auth/logout', { refreshToken: tokens.refreshToken });
       }
     } catch (error) {
       ErrorHandler.handleError(error as Error, 'AuthService.logout');
@@ -179,7 +210,7 @@ export class AuthService {
       clearTimeout(this.tokenRefreshTimeout);
     }
 
-    // Refresh token 5 minutes before expiration
+    // تمدید توکن 5 دقیقه قبل از انقضا
     const refreshTime = (expiresIn - 300) * 1000;
     this.tokenRefreshTimeout = setTimeout(() => {
       this.refreshTokens().catch(console.error);
@@ -193,7 +224,7 @@ export class AuthService {
         throw new Error('No refresh token available');
       }
 
-      const response = await ApiService.post('/auth/refresh', {
+      const response = await apiService.post<{ tokens: AuthToken }>('/auth/refresh', {
         refreshToken: tokens.refreshToken
       });
 

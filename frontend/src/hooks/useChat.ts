@@ -20,11 +20,10 @@ export const useChat = () => {
         text,
         sender: 'user',
         timestamp: new Date().toISOString(),
-        context
       }));
 
       // Get AI response
-      const response = await aiApi.sendMessage(text, context);
+      const response = await aiApi.sendMessage(text);
 
       // Add AI response
       const aiMessageId = (Date.now() + 1).toString();
@@ -32,13 +31,7 @@ export const useChat = () => {
         id: aiMessageId,
         text: response.message,
         sender: 'ai',
-        timestamp: new Date().toISOString(),
-        category: response.category,
-        context: {
-          ...context,
-          confidence: response.confidence,
-          relatedTopics: response.relatedTopics
-        }
+        timestamp: new Date().toISOString()
       }));
 
       // Submit for learning

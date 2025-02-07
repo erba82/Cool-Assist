@@ -1,0 +1,445 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\PC\\Cool-Assist\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Monitoring\\LiveMonitoring.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Monitoring\\LiveMonitoring.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Layout\\Sidebar.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Layout\\Sidebar.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Knowledge\\KnowledgeBase.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Knowledge\\KnowledgeBase.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Layout\\Layout.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Layout\\Layout.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\FlowDiagram\\FlowDiagramDesigner.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\FlowDiagram\\FlowDiagramDesigner.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Electrical\\WiringDiagram.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Electrical\\WiringDiagram.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Design\\AutomaticSystemDesigner.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Design\\AutomaticSystemDesigner.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Dashboard\\PerformanceDashboard.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Dashboard\\PerformanceDashboard.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Chat\\MessageList.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Chat\\MessageList.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Chat\\MessageItem.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Chat\\MessageItem.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Chat\\ChatWindow.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Chat\\ChatWindow.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Chat\\ChatInput.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Chat\\ChatInput.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\RefrigerationCalculator.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Calculator\\RefrigerationCalculator.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\PsychrometricChart.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Calculator\\PsychrometricChart.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\PressureEnthalpyDiagram.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Calculator\\PressureEnthalpyDiagram.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\PipingCalculator.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Calculator\\PipingCalculator.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\HVACCalculator.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Calculator\\HVACCalculator.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\HeatExchangerCalculator.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Calculator\\HeatExchangerCalculator.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\EngineeringCalculator.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Calculator\\EngineeringCalculator.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\CompressorCalculator.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Calculator\\CompressorCalculator.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Auth\\Welcome.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Auth\\Welcome.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Auth\\SignUp.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Auth\\SignUp.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Auth\\LinkedInCallback.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Auth\\LinkedInCallback.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Analytics\\PerformanceAnalytics.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Analytics\\PerformanceAnalytics.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Analysis\\SystemAnalyzer.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:frontend\\src\\components\\Analysis\\SystemAnalyzer.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "LiveMonitoring.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Monitoring\\LiveMonitoring.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Monitoring\\LiveMonitoring.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Monitoring\\LiveMonitoring.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Monitoring\\LiveMonitoring.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T11:39:20.957Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Sidebar.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Layout\\Sidebar.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Layout\\Sidebar.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Layout\\Sidebar.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Layout\\Sidebar.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T11:39:16.713Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Layout.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Layout\\Layout.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Layout\\Layout.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Layout\\Layout.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Layout\\Layout.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T11:39:08.041Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "KnowledgeBase.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Knowledge\\KnowledgeBase.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Knowledge\\KnowledgeBase.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Knowledge\\KnowledgeBase.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Knowledge\\KnowledgeBase.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:18:43.888Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "FlowDiagramDesigner.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\FlowDiagram\\FlowDiagramDesigner.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\FlowDiagram\\FlowDiagramDesigner.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\FlowDiagram\\FlowDiagramDesigner.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\FlowDiagram\\FlowDiagramDesigner.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:18:39.504Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "WiringDiagram.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Electrical\\WiringDiagram.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Electrical\\WiringDiagram.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Electrical\\WiringDiagram.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Electrical\\WiringDiagram.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:18:34.447Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "AutomaticSystemDesigner.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Design\\AutomaticSystemDesigner.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Design\\AutomaticSystemDesigner.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Design\\AutomaticSystemDesigner.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Design\\AutomaticSystemDesigner.tsx",
+              "ViewState": "AgIAACoAAAAAAAAAAAAAABkAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:16:38.896Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "PerformanceDashboard.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Dashboard\\PerformanceDashboard.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Dashboard\\PerformanceDashboard.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Dashboard\\PerformanceDashboard.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Dashboard\\PerformanceDashboard.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:16:36.08Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "MessageList.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Chat\\MessageList.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Chat\\MessageList.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Chat\\MessageList.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Chat\\MessageList.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:16:29.088Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "MessageItem.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Chat\\MessageItem.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Chat\\MessageItem.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Chat\\MessageItem.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Chat\\MessageItem.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:16:27.704Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "ChatWindow.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Chat\\ChatWindow.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Chat\\ChatWindow.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Chat\\ChatWindow.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Chat\\ChatWindow.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:16:25.943Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "ChatInput.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Chat\\ChatInput.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Chat\\ChatInput.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Chat\\ChatInput.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Chat\\ChatInput.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:16:23.903Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "RefrigerationCalculator.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\RefrigerationCalculator.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Calculator\\RefrigerationCalculator.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\RefrigerationCalculator.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Calculator\\RefrigerationCalculator.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:16:20.904Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "PsychrometricChart.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\PsychrometricChart.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Calculator\\PsychrometricChart.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\PsychrometricChart.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Calculator\\PsychrometricChart.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:16:19.472Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "PressureEnthalpyDiagram.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\PressureEnthalpyDiagram.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Calculator\\PressureEnthalpyDiagram.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\PressureEnthalpyDiagram.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Calculator\\PressureEnthalpyDiagram.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:16:18.056Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "PipingCalculator.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\PipingCalculator.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Calculator\\PipingCalculator.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\PipingCalculator.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Calculator\\PipingCalculator.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:16:15.992Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "HVACCalculator.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\HVACCalculator.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Calculator\\HVACCalculator.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\HVACCalculator.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Calculator\\HVACCalculator.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:16:14.416Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "HeatExchangerCalculator.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\HeatExchangerCalculator.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Calculator\\HeatExchangerCalculator.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\HeatExchangerCalculator.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Calculator\\HeatExchangerCalculator.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:16:12.367Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "EngineeringCalculator.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\EngineeringCalculator.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Calculator\\EngineeringCalculator.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\EngineeringCalculator.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Calculator\\EngineeringCalculator.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:16:10.447Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "CompressorCalculator.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\CompressorCalculator.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Calculator\\CompressorCalculator.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Calculator\\CompressorCalculator.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Calculator\\CompressorCalculator.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:16:08.791Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "Welcome.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Auth\\Welcome.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Auth\\Welcome.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Auth\\Welcome.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Auth\\Welcome.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:16:05.927Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "SignUp.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Auth\\SignUp.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Auth\\SignUp.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Auth\\SignUp.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Auth\\SignUp.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:16:03.599Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "LinkedInCallback.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Auth\\LinkedInCallback.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Auth\\LinkedInCallback.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Auth\\LinkedInCallback.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Auth\\LinkedInCallback.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:16:00.824Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "PerformanceAnalytics.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Analytics\\PerformanceAnalytics.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Analytics\\PerformanceAnalytics.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Analytics\\PerformanceAnalytics.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Analytics\\PerformanceAnalytics.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:15:55.949Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "SystemAnalyzer.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Analysis\\SystemAnalyzer.tsx",
+              "RelativeDocumentMoniker": "frontend\\src\\components\\Analysis\\SystemAnalyzer.tsx",
+              "ToolTip": "C:\\Users\\PC\\Cool-Assist\\frontend\\src\\components\\Analysis\\SystemAnalyzer.tsx",
+              "RelativeToolTip": "frontend\\src\\components\\Analysis\\SystemAnalyzer.tsx",
+              "ViewState": "AgIAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-02-07T08:15:47.574Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

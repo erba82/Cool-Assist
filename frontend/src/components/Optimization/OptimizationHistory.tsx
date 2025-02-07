@@ -1,3 +1,8 @@
+/**
+ * @author erba82
+ * @lastModified 2025-02-07 12:13:21
+ */
+
 import React, { useEffect, useState } from 'react';
 import {
   Box,
@@ -170,96 +175,4 @@ export const OptimizationHistory: React.FC = () => {
                       <IconButton
                         size="small"
                         onClick={() => setExpandedRow(
-                          expandedRow === record.id ? null : record.id
-                        )}
-                      >
-                        {expandedRow === record.id ? 
-                          <ExpandLessIcon /> : 
-                          <ExpandMoreIcon />}
-                      </IconButton>
-                    </TableCell>
-                    <TableCell>
-                      {record.timestamp.toLocaleString()}
-                    </TableCell>
-                    <TableCell>{record.parameter}</TableCell>
-                    <TableCell>
-                      {record.previousValue} → {record.newValue}
-                    </TableCell>
-                    <TableCell>
-                      {record.improvement > 0 ? '+' : ''}
-                      {record.improvement.toFixed(2)}%
-                    </TableCell>
-                    <TableCell>
-                      <Chip 
-                        label={record.status}
-                        color={getStatusColor(record.status)}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={record.impact}
-                        color={getImpactColor(record.impact)}
-                        size="small"
-                      />
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell colSpan={7} style={{ paddingBottom: 0, paddingTop: 0 }}>
-                      <Collapse in={expandedRow === record.id}>
-                        <Box sx={{ margin: 2 }}>
-                          <Typography variant="h6" gutterBottom>
-                            Implementation Steps
-                          </Typography>
-                          <List dense>
-                            {record.steps.map((step, index) => (
-                              <ListItem key={index}>
-                                <ListItemText primary={step} />
-                              </ListItem>
-                            ))}
-                          </List>
-                          {record.notes && (
-                            <Box mt={2}>
-                              <Typography variant="subtitle2">Notes:</Typography>
-                              <Typography variant="body2">
-                                {record.notes}
-                              </Typography>
-                            </Box>
-                          )}
-                        </Box>
-                      </Collapse>
-                    </TableCell>
-                  </TableRow>
-                </React.Fragment>
-              ))}
-          </TableBody>
-        </Table>
-        <TablePagination
-          component="div"
-          count={filteredHistory.length}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10, 25, 50]}
-        />
-      </Card>
-
-      {loading && (
-        <Box display="flex" justifyContent="center" mt={3}>
-          <CircularProgress />
-        </Box>
-      )}
-
-      {!loading && filteredHistory.length === 0 && (
-        <Box textAlign="center" mt={3}>
-          <Typography color="text.secondary">
-            No optimization history records found
-          </Typography>
-        </Box>
-      )}
-    </Box>
-  );
-};
-
-export default OptimizationHistory;
+                          expandedRow === record.id ? null : record.i

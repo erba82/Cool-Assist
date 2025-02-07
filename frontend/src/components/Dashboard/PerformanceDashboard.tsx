@@ -1,8 +1,6 @@
-// src/components/Dashboard/PerformanceDashboard.tsx
-
 /**
  * @author erba82
- * @lastModified 2025-02-02 12:33:32
+ * @lastModified 2025-02-07 12:13:21
  */
 
 import React, { useEffect, useState, useMemo } from 'react';
@@ -26,8 +24,10 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-<<<<<<< HEAD
-// in PerformanceService.ts
+import { MonitoringService } from '../../services/monitoring/MonitoringService';
+import { PerformanceOptimizer } from '../../services/optimization/PerformanceOptimizer';
+
+// Interfaces
 export interface PerformanceData {
   timestamp: Date;
   metrics: {
@@ -48,30 +48,18 @@ export class PerformanceService {
       }
     };
   }
+
+  async getPerformanceHistory(): Promise<PerformanceData[]> {
+    // Implement your history fetching logic here
+    return [];
+  }
 }
+
 interface MonitoringAlert {
   id: string;
   severity: 'low' | 'medium' | 'high';
   message: string;
 }
-
-import { MonitoringService } from '../../services/monitoring/MonitoringService';
-import { PerformanceOptimizer } from '../../services/optimization/PerformanceOptimizer';
-=======
-import { 
-  PerformanceService, 
-  PerformanceData 
-} from '../../services/performance/PerformanceService';
-import { 
-  MonitoringService, 
-  Alert as MonitoringAlert 
-} from '../../services/monitoring/MonitoringService';
-import { 
-  PerformanceOptimizer,
-  SystemMetrics,
-  Suggestion 
-} from '../../services/optimization/PerformanceOptimizer';
->>>>>>> 5103e32 (توضیح مختصر در مورد تغییرات انجام شده)
 
 interface PerformanceMetrics {
   cpu: number;
@@ -88,7 +76,6 @@ interface ChartDataPoint {
   };
 }
 
-<<<<<<< HEAD
 interface DashboardSystemMetrics {
   efficiency: number;
   performance: number;
@@ -99,8 +86,7 @@ interface DashboardSystemMetrics {
 interface OptimizationSuggestion {
   description: string;
 }
-=======
->>>>>>> 5103e32 (توضیح مختصر در مورد تغییرات انجام شده)
+
 const PerformanceDashboard: React.FC = () => {
   const [metrics, setMetrics] = useState<PerformanceMetrics | null>(null);
   const [performanceHistory, setPerformanceHistory] = useState<ChartDataPoint[]>([]);
@@ -131,7 +117,12 @@ const PerformanceDashboard: React.FC = () => {
         const currentPerformance = await performanceService.getCurrentPerformance();
         setMetrics(currentPerformance.metrics);
 
-<<<<<<< HEAD
+        const history = await performanceService.getPerformanceHistory();
+        setPerformanceHistory(transformPerformanceData(history));
+
+        const activeAlerts = await monitoringService.getActiveAlerts();
+        setAlerts(activeAlerts);
+
         const systemMetrics: DashboardSystemMetrics = {
           efficiency: currentPerformance.metrics.cpu,
           performance: currentPerformance.metrics.responseTime,
@@ -140,22 +131,6 @@ const PerformanceDashboard: React.FC = () => {
         };
 
         const optimizationSuggestions: OptimizationSuggestion[] = 
-=======
-        const history = await performanceService.getPerformanceHistory();
-        setPerformanceHistory(transformPerformanceData(history));
-
-        const activeAlerts = await monitoringService.getActiveAlerts();
-        setAlerts(activeAlerts);
-
-        const systemMetrics: SystemMetrics = {
-          efficiency: currentPerformance.metrics.cpu,
-          performance: currentPerformance.metrics.responseTime,
-          reliability: currentPerformance.metrics.availability,
-          maintenance: currentPerformance.metrics.errorRate
-        };
-
-        const optimizationSuggestions: Suggestion[] = 
->>>>>>> 5103e32 (توضیح مختصر در مورد تغییرات انجام شده)
           await optimizer.generateSuggestions(systemMetrics);
         setSuggestions(optimizationSuggestions.map(suggestion => suggestion.description));
 

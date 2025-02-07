@@ -12,6 +12,7 @@ interface OptimizationParameter {
 }
 
 interface OptimizationSuggestion {
+  message: any;
   id: string;
   parameter: string;
   currentValue: number;
@@ -92,7 +93,7 @@ export class PerformanceOptimizer {
 
   private async getCurrentParameters(): Promise<OptimizationParameter[]> {
     try {
-      const response = await apiService.get('/optimization/parameters');
+      const response = await apiService.get<OptimizationParameter[]>('/optimization/parameters');
       return response.data;
     } catch (error) {
       ErrorHandler.handleError(error as Error, 'PerformanceOptimizer.getCurrentParameters');
@@ -134,6 +135,7 @@ export class PerformanceOptimizer {
       );
 
       return {
+        message: "Optimization suggestion",
         id: `opt_${Date.now()}_${parameter.name}`,
         parameter: parameter.name,
         currentValue: parameter.currentValue,
@@ -178,7 +180,10 @@ export class PerformanceOptimizer {
   ): Promise<number | null> {
     try {
       // Use machine learning model for prediction
-      const response = await apiService.post('/optimization/predict', {
+      interface PredictResponse {
+        optimalValue: number;
+      }
+      const response = await apiService.post<PredictResponse>('/optimization/predict', {
         parameter,
         historicalImpact,
         currentMetrics
