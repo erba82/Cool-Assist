@@ -22,10 +22,9 @@ const KnowledgeBase: React.FC = () => {
   }, [selectedCategory, searchQuery]);
 
   const fetchKnowledge = async () => {
-    const response = await aiApi.getKnowledgeBase({
-      category: selectedCategory,
-      query: searchQuery
-    });
+    const response = await aiApi.getKnowledgeBase(
+      `?category=${selectedCategory ?? ''}&query=${searchQuery}`
+    );
     setKnowledge(response.data);
     setCategories(response.categories);
   };
