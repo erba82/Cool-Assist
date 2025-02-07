@@ -21,8 +21,16 @@ import {
   Opacity
 } from '@mui/icons-material';
 import { Line } from 'react-chartjs-2';
-import { monitoringService } from '../../services/monitoringService';
-import { SystemStatus, SensorData } from '../../types/monitoring';
+import { MonitoringService } from '../../services/monitoring/MonitoringService';
+
+const monitoringService = MonitoringService.getInstance();
+import { SystemStatus } from '../../types/monitoring';
+
+interface SensorData {
+  timestamp: Date;
+  compressorPressure?: number;
+  systemTemp?: number;
+}
 
 const LiveMonitoring: React.FC = () => {
   const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
@@ -39,10 +47,10 @@ const LiveMonitoring: React.FC = () => {
 
   const fetchSystemStatus = async () => {
     try {
-      const status = await monitoringService.getCurrentStatus();
-      setSystemStatus(status);
-      updateHistoricalData(status);
-      checkAlerts(status);
+      const status = await monitoringService.getComponentsStatus();
+      setSystemStatus(status[0]);
+      updateHistoricalData(status[0]);
+      checkAlerts(status[0]);
     } catch (error) {
       console.error('Error fetching system status:', error);
     }
@@ -51,16 +59,28 @@ const LiveMonitoring: React.FC = () => {
   const updateHistoricalData = (status: SystemStatus) => {
     setHistoricalData(prev => [...prev.slice(-50), {
       timestamp: new Date(),
-      ...status.sensors
+      ...(status as any).sensors
     }]);
   };
 
   const checkAlerts = (status: SystemStatus) => {
+    const liveStatus = status as unknown as { 
+      sensors: { 
+        compressorPressure: number; 
+        temperature: number; 
+        superheat: number; 
+        power: number; 
+      }; 
+      limits: { 
+        maxPressure: number; 
+        minTemp: number; 
+      }; 
+    };
     const newAlerts = [];
-    if (status.compressor.pressure > status.limits.maxPressure) {
+    if (liveStatus.sensors.compressorPressure > liveStatus.limits.maxPressure) {
       newAlerts.push('High pressure warning!');
     }
-    if (status.evaporator.temperature < status.limits.minTemp) {
+    if (liveStatus.sensors.temperature < liveStatus.limits.minTemp) {
       newAlerts.push('Low temperature warning!');
     }
     setAlerts(newAlerts);
@@ -142,13 +162,13 @@ const LiveMonitoring: React.FC = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Speed color="primary" />
                     <Typography>
-                      Pressure: {systemStatus?.compressor.pressure} bar
+                      Pressure: {(systemStatus as any)?.sensors?.compressorPressure} bar
                     </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Power color="secondary" />
                     <Typography>
-                      Power: {systemStatus?.compressor.power} kW
+                      Power: {(systemStatus as any)?.sensors?.power} kW
                     </Typography>
                   </Box>
                 </CardContent>
@@ -164,13 +184,13 @@ const LiveMonitoring: React.FC = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Thermostat color="primary" />
                     <Typography>
-                      Temperature: {systemStatus?.evaporator.temperature}°C
+                      Temperature: {(systemStatus as any)?.sensors?.temperature}°C
                     </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Opacity color="secondary" />
                     <Typography>
-                      Superheat: {systemStatus?.evaporator.superheat}°C
+                      Superheat: {(systemStatus as any)?.sensors?.superheat}°C
                     </Typography>
                   </Box>
                 </CardContent>

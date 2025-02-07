@@ -58,7 +58,17 @@ export const SystemHealth: React.FC = () => {
     try {
       setLoading(true);
       const componentsStatus = await monitoringService.getComponentsStatus();
-      setComponents(componentsStatus);
+      const mappedComponents = componentsStatus.map((component: any) => ({
+        id: component.id,
+        name: component.name,
+        status: component.status || (component.efficiency < 60 ? 'critical' : component.efficiency < 80 ? 'warning' : 'healthy'),
+        lastMaintenance: component.lastMaintenance,
+        efficiency: component.efficiency,
+        temperature: component.temperature || 0,
+        pressure: component.pressure || 0,
+        runtime: component.runtime || 0,
+      }));
+      setComponents(mappedComponents);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch system health');
@@ -76,7 +86,7 @@ export const SystemHealth: React.FC = () => {
   const handleComponentClick = async (component: ComponentHealth) => {
     setSelectedComponent(component);
     try {
-      const history = await monitoringService.getComponentHistory(component.id);
+      const history = await (monitoringService as any).getComponentHistory(component.id);
       setHealthHistory(history);
       setDialogOpen(true);
     } catch (err) {
