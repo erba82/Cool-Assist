@@ -35,14 +35,59 @@ export interface RefrigerantProperties {
       gwp: 0,
       odp: 0,
       properties: {
-        // Detailed property arrays
+        temperature: [],
+        pressure: [],
+        liquidDensity: [],
+        vaporDensity: [],
+        liquidEnthalpy: [],
+        vaporEnthalpy: [],
+        liquidEntropy: [],
+        vaporEntropy: []
       }
     },
     'R134a': {
-      // Properties for R134a
+      name: '1,1,1,2-Tetrafluoroethane',
+      number: 'R134a',
+      chemicalFormula: 'CH2FCF3',
+      criticalPoint: {
+        temperature: 101.06,
+        pressure: 40.59
+      },
+      safetyGroup: 'A1',
+      gwp: 1430,
+      odp: 0,
+      properties: {
+        temperature: [],
+        pressure: [],
+        liquidDensity: [],
+        vaporDensity: [],
+        liquidEnthalpy: [],
+        vaporEnthalpy: [],
+        liquidEntropy: [],
+        vaporEntropy: []
+      }
     },
     'R404A': {
-      // Properties for R404A
+      name: 'R404A',
+      number: 'R404A',
+      chemicalFormula: 'CH2FCF3/CF3CHF2/CF3CH3',
+      criticalPoint: {
+        temperature: 72.14,
+        pressure: 37.35
+      },
+      safetyGroup: 'A1',
+      gwp: 3922,
+      odp: 0,
+      properties: {
+        temperature: [],
+        pressure: [],
+        liquidDensity: [],
+        vaporDensity: [],
+        liquidEnthalpy: [],
+        vaporEnthalpy: [],
+        liquidEntropy: [],
+        vaporEntropy: []
+      }
     },
     // Add more refrigerants
   };
