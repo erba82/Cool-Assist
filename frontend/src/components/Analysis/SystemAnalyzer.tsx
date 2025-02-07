@@ -26,7 +26,7 @@ import {
 } from '@mui/lab';
 import { SystemAnalysis } from '../../utils/systemAnalysis';
 import { PerformanceOptimizer } from '../../services/optimization/PerformanceOptimizer';
-import { MonitoringService } from '../../services/monitoringService';
+import { MonitoringService } from '../../services/monitoring/MonitoringService';
 import {
   LineChart,
   Line,
@@ -52,6 +52,10 @@ interface SystemAlert {
   status: 'active' | 'resolved';
 }
 
+interface OptimizationSuggestion {
+  message: string;
+}
+
 export const SystemAnalyzer: React.FC = () => {
   const [metrics, setMetrics] = useState<SystemMetrics | null>(null);
   const [alerts, setAlerts] = useState<SystemAlert[]>([]);
@@ -67,8 +71,8 @@ export const SystemAnalyzer: React.FC = () => {
 
       // Initialize services
       const analyzer = new SystemAnalysis();
-      const optimizer = new PerformanceOptimizer();
-      const monitoring = new MonitoringService();
+      const optimizer = PerformanceOptimizer.getInstance();
+      const monitoring = MonitoringService.getInstance();
 
       // Fetch current system metrics
       const currentMetrics = await analyzer.getCurrentMetrics();
@@ -76,15 +80,20 @@ export const SystemAnalyzer: React.FC = () => {
 
       // Fetch active alerts
       const systemAlerts = await monitoring.getActiveAlerts();
-      setAlerts(systemAlerts);
-
+      setAlerts(systemAlerts.map(alert => ({
+        id: Number(alert.id),
+        severity: alert.severity as 'low' | 'medium' | 'high',
+        message: alert.message,
+        timestamp: alert.timestamp,
+        status: alert.status as 'active' | 'resolved'
+      })));
       // Get performance history
       const history = await monitoring.getPerformanceHistory();
       setPerformanceData(history);
 
       // Generate optimization suggestions
       const suggestions = await optimizer.generateSuggestions(currentMetrics);
-      setOptimizationSuggestions(suggestions);
+      setOptimizationSuggestions(suggestions.map(suggestion => suggestion.message));
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to analyze system');
