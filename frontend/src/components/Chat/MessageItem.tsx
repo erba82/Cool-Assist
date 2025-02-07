@@ -16,6 +16,13 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import EditIcon from '@mui/icons-material/Edit';
 import { aiLearningService } from '../../services/aiLearning';
 
+interface Message {
+  id: string;
+  sender: 'ai' | 'user';
+  category?: string;
+  context?: Record<string, any>;
+}
+
 interface MessageItemProps {
   message: Message;
   onFeedbackSubmit: (feedback: any) => void;
