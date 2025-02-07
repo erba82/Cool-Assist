@@ -11,7 +11,6 @@ import {
   InputLabel,
   Button,
   Stack,
-  Tooltip,
 } from '@mui/material';
 import {
   BarChart,
@@ -32,12 +31,13 @@ import { PerformanceService } from '../../services/performance/PerformanceServic
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { PerformanceData } from '../../types/monitoring';
 
 interface AnalyticsData {
   efficiency: {
-    daily: number[];
-    weekly: number[];
-    monthly: number[];
+    daily: { date: string; value: number }[];
+    weekly: { date: string; value: number }[];
+    monthly: { date: string; value: number }[];
   };
   componentPerformance: {
     name: string;
@@ -58,6 +58,109 @@ interface AnalyticsData {
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
+/**
+ * این تابع تاریخچه عملکرد (PerformanceData[]) را به داده‌های آنالیتیکس تبدیل می‌کند.
+ * برای نمونه:
+ * - **Efficiency Trends:** میانگین "کارایی" هر روز (محاسبه شده به صورت 100 - cpu)
+ * - **Component Performance:** یک مجموعه تجمعی با میانگین کارایی و تعداد مشکلات شناسایی‌شده
+ * - **Resource Usage:** آرایه‌ای از مقادیر CPU، Memory و (به صورت پیش‌فرض) Network
+ * - **Alerts:** شمارش مشکلات بحرانی و هشدار (براساس آستانه‌های cpu، memory، responseTime و errorRate)
+ */
+const generateAnalyticsData = (history: PerformanceData[]): AnalyticsData => {
+  // گروه‌بندی بر اساس تاریخ (روز)
+  const dailyMap = new Map<string, { sumEfficiency: number; count: number }>();
+  history.forEach(record => {
+    const dateKey = record.timestamp.toISOString().split('T')[0];
+    // تعریف کارایی به صورت تقریبی: 100 - درصد مصرف CPU
+    const efficiency = 100 - record.metrics.cpu;
+    if (dailyMap.has(dateKey)) {
+      const entry = dailyMap.get(dateKey)!;
+      entry.sumEfficiency += efficiency;
+      entry.count += 1;
+    } else {
+      dailyMap.set(dateKey, { sumEfficiency: efficiency, count: 1 });
+    }
+  });
+  const dailyEfficiency = Array.from(dailyMap.entries()).map(([date, { sumEfficiency, count }]) => ({
+    date,
+    value: sumEfficiency / count,
+  }));
+
+  // برای سادگی، داده‌های هفتگی و ماهانه در این نمونه خالی هستند؛
+  // در صورت نیاز می‌توانید آن‌ها را مشابه گروه‌بندی روزانه محاسبه کنید.
+  const weeklyEfficiency: { date: string; value: number }[] = [];
+  const monthlyEfficiency: { date: string; value: number }[] = [];
+
+  // محاسبه عملکرد اجزای سیستم (در این مثال به‌صورت تجمعی)
+  let totalEfficiency = 0;
+  let totalIssues = 0;
+  history.forEach(record => {
+    const efficiency = 100 - record.metrics.cpu;
+    totalEfficiency += efficiency;
+    // شمارش مشکلات (در اینجا با توجه به مقادیر بحرانی)
+    if (record.metrics.cpu >= 90) totalIssues++;
+    if (record.metrics.memory >= 95) totalIssues++;
+    if (record.metrics.responseTime >= 5000) totalIssues++;
+    if (record.metrics.errorRate >= 10) totalIssues++;
+  });
+  const countRecords = history.length || 1;
+  const avgEfficiency = totalEfficiency / countRecords;
+  const componentPerformance = [
+    { name: 'Performance', efficiency: avgEfficiency, issues: totalIssues },
+  ];
+
+  // آرایه‌های استفاده منابع:
+  const cpuUsage: number[] = [];
+  const memoryUsage: number[] = [];
+  const networkUsage: number[] = []; // مقدار پیش‌فرض (چون اطلاعات شبکه موجود نیست)
+  history.forEach(record => {
+    cpuUsage.push(record.metrics.cpu);
+    memoryUsage.push(record.metrics.memory);
+    networkUsage.push(0);
+  });
+
+  // شمارش هشدارها:
+  let critical = 0;
+  let warning = 0;
+  history.forEach(record => {
+    if (
+      record.metrics.cpu >= 90 ||
+      record.metrics.memory >= 95 ||
+      record.metrics.responseTime >= 5000 ||
+      record.metrics.errorRate >= 10
+    ) {
+      critical++;
+    } else if (
+      record.metrics.cpu >= 70 ||
+      record.metrics.memory >= 80 ||
+      record.metrics.responseTime >= 2000 ||
+      record.metrics.errorRate >= 5
+    ) {
+      warning++;
+    }
+  });
+  const alerts = {
+    critical,
+    warning,
+    info: 0,
+  };
+
+  return {
+    efficiency: {
+      daily: dailyEfficiency,
+      weekly: weeklyEfficiency,
+      monthly: monthlyEfficiency,
+    },
+    componentPerformance,
+    resourceUsage: {
+      cpu: cpuUsage,
+      memory: memoryUsage,
+      network: networkUsage,
+    },
+    alerts,
+  };
+};
+
 export const PerformanceAnalytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState('7d');
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -67,16 +170,15 @@ export const PerformanceAnalytics: React.FC = () => {
 
   useEffect(() => {
     fetchAnalyticsData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRange, startDate, endDate]);
 
   const fetchAnalyticsData = async () => {
     try {
       setLoading(true);
       const performanceService = PerformanceService.getInstance();
-      
       let start = startDate;
       let end = endDate;
-
       if (!start || !end) {
         end = new Date();
         start = new Date();
@@ -90,13 +192,15 @@ export const PerformanceAnalytics: React.FC = () => {
           case '90d':
             start.setDate(end.getDate() - 90);
             break;
+          default:
+            break;
         }
       }
-
-      const data = await performanceService.analyzePerformanceTrends(
-        Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
-      );
-      setAnalyticsData(data);
+      // دریافت تاریخچه عملکرد بین تاریخ‌های start و end
+      const history = await performanceService.getPerformanceHistory(start, end);
+      // تبدیل تاریخچه عملکرد به داده‌های آنالیتیکس
+      const analytics = generateAnalyticsData(history);
+      setAnalyticsData(analytics);
     } catch (error) {
       console.error('Failed to fetch analytics data:', error);
     } finally {
@@ -109,7 +213,6 @@ export const PerformanceAnalytics: React.FC = () => {
       <Box sx={{ p: 3 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h4">Performance Analytics</Typography>
-          
           <Stack direction="row" spacing={2}>
             <FormControl sx={{ minWidth: 120 }}>
               <InputLabel>Time Range</InputLabel>
@@ -124,7 +227,6 @@ export const PerformanceAnalytics: React.FC = () => {
                 <MenuItem value="custom">Custom Range</MenuItem>
               </Select>
             </FormControl>
-
             {timeRange === 'custom' && (
               <>
                 <DatePicker
@@ -139,12 +241,7 @@ export const PerformanceAnalytics: React.FC = () => {
                 />
               </>
             )}
-
-            <Button 
-              variant="contained" 
-              onClick={fetchAnalyticsData}
-              disabled={loading}
-            >
+            <Button variant="contained" onClick={fetchAnalyticsData} disabled={loading}>
               Update
             </Button>
           </Stack>
@@ -160,18 +257,13 @@ export const PerformanceAnalytics: React.FC = () => {
                 </Typography>
                 <Box height={300}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={analyticsData?.efficiency.daily}>
+                    <LineChart data={analyticsData?.efficiency.daily || []}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="date" />
                       <YAxis />
                       <RechartsTooltip />
                       <Legend />
-                      <Line 
-                        type="monotone" 
-                        dataKey="value" 
-                        stroke="#8884d8" 
-                        name="Daily Efficiency"
-                      />
+                      <Line type="monotone" dataKey="value" stroke="#8884d8" name="Daily Efficiency" />
                     </LineChart>
                   </ResponsiveContainer>
                 </Box>
@@ -188,7 +280,7 @@ export const PerformanceAnalytics: React.FC = () => {
                 </Typography>
                 <Box height={300}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={analyticsData?.componentPerformance}>
+                    <BarChart data={analyticsData?.componentPerformance || []}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
                       <YAxis />
@@ -212,7 +304,18 @@ export const PerformanceAnalytics: React.FC = () => {
                 </Typography>
                 <Box height={300}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={analyticsData?.resourceUsage}>
+                    <LineChart
+                      data={
+                        analyticsData
+                          ? analyticsData.resourceUsage.cpu.map((cpuValue, index) => ({
+                              timestamp: `T${index + 1}`,
+                              cpu: cpuValue,
+                              memory: analyticsData.resourceUsage.memory[index],
+                              network: analyticsData.resourceUsage.network[index],
+                            }))
+                          : []
+                      }
+                    >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="timestamp" />
                       <YAxis />
@@ -253,9 +356,11 @@ export const PerformanceAnalytics: React.FC = () => {
                         dataKey="value"
                         label
                       >
-                        {analyticsData?.alerts && Object.values(analyticsData.alerts).map((_, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
+                        {[analyticsData?.alerts.critical, analyticsData?.alerts.warning, analyticsData?.alerts.info].map(
+                          (_, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          )
+                        )}
                       </Pie>
                       <RechartsTooltip />
                       <Legend />
