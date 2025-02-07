@@ -18,12 +18,27 @@ import {
   TablePagination,
   TextField,
   MenuItem,
+  CircularProgress,
 } from '@mui/material';
 import {
   KeyboardArrowDown as ExpandMoreIcon,
   KeyboardArrowUp as ExpandLessIcon,
 } from '@mui/icons-material';
-import { PerformanceOptimizer } from '../../services/optimization/PerformanceOptimizer';
+
+export class PerformanceOptimizer {
+  private static instance: PerformanceOptimizer;
+  private constructor() {}
+  public static getInstance(): PerformanceOptimizer {
+    if (!PerformanceOptimizer.instance) {
+      PerformanceOptimizer.instance = new PerformanceOptimizer();
+    }
+    return PerformanceOptimizer.instance;
+  }
+  public async getOptimizationHistory(): Promise<OptimizationRecord[]> {
+    // Implement your history fetching logic here
+    return [];
+  }
+}
 
 interface OptimizationRecord {
   id: string;
