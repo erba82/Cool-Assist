@@ -86,11 +86,12 @@ export const SignUp: React.FC = () => {
     }
   };
 
+  // تغییر متد فراخوانی از signUpWithGoogle به googleSignUp (یا نام متد صحیح موجود در AuthService)
   const handleGoogleSignUp = async () => {
     try {
       setIsLoading(true);
       setError(null);
-      await AuthService.signUpWithGoogle();
+      await AuthService.googleSignUp();
       navigate('/dashboard');
     } catch (err) {
       setError('Google sign up failed');

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { 
-  Box, 
-  CircularProgress, 
-  Typography, 
-  Alert, 
+import {
+  Box,
+  CircularProgress,
+  Typography,
+  Alert,
   Paper,
-  LinearProgress 
+  LinearProgress
 } from '@mui/material';
 import { AuthService } from '../../services/authService';
 import { LinkedInAIService } from '../../services/ai/LinkedInAIService';
@@ -48,7 +48,7 @@ export const LinkedInCallback: React.FC = () => {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Get URL parameters
+        // دریافت پارامترهای URL
         const params = new URLSearchParams(location.search);
         const code = params.get('code');
         const state = params.get('state');
@@ -57,24 +57,27 @@ export const LinkedInCallback: React.FC = () => {
           throw new Error('Invalid callback parameters');
         }
 
-        // Step 1: Authentication
+        // مرحله ۱: احراز هویت
         setProgress(20);
         const user = await AuthService.handleLinkedInCallback(code, state);
         setStatus(prev => ({ ...prev, auth: 'complete' }));
         setProgress(40);
 
-        // Step 2: Initialize AI Service
+        // مرحله ۲: مقداردهی اولیه سرویس هوش مصنوعی
         const aiService = LinkedInAIService.getInstance();
+        if (!user.linkedInAccessToken) {
+          throw new Error('Missing LinkedIn access token');
+        }
         await aiService.initializeAILearning(user.linkedInAccessToken);
         setStatus(prev => ({ ...prev, aiInit: 'complete' }));
         setProgress(70);
 
-        // Step 3: Fetch and process LinkedIn profile
+        // مرحله ۳: دریافت و پردازش پروفایل LinkedIn
         await AuthService.updateUserProfile(user.id);
         setStatus(prev => ({ ...prev, profile: 'complete' }));
         setProgress(100);
 
-        // Redirect to dashboard after short delay
+        // هدایت به داشبورد پس از تاخیر کوتاه
         setTimeout(() => {
           navigate('/dashboard');
         }, 1500);
@@ -87,8 +90,8 @@ export const LinkedInCallback: React.FC = () => {
           aiInit: 'error',
           profile: 'error'
         });
-        
-        // Redirect to login after error
+
+        // هدایت به صفحه ورود پس از بروز خطا
         setTimeout(() => {
           navigate('/login');
         }, 3000);
@@ -134,9 +137,9 @@ export const LinkedInCallback: React.FC = () => {
         <>
           <CircularProgress size={40} sx={{ mb: 3 }} />
           <ProgressContainer>
-            <LinearProgress 
-              variant="determinate" 
-              value={progress} 
+            <LinearProgress
+              variant="determinate"
+              value={progress}
               sx={{ height: 8, borderRadius: 5 }}
             />
             <Box sx={{ mt: 2 }}>
