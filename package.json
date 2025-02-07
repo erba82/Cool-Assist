@@ -1,20 +1,38 @@
 {
+  "name": "cool-assist",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
+    "audit": "npm audit",
+    "preinstall": "npx npm-check-updates --upgrade"
+  },
   "dependencies": {
-    "@types/jspdf": "^2.0.0",
-    "axios": "^1.7.9",
-    "chart.js": "^4.4.7",
-    "d3": "^7.9.0",
-    "date-fns": "2.28.0",
-    "framer-motion": "^12.1.0",
-    "jspdf": "^2.5.2",
-    "jspdf-autotable": "^3.8.4",
-    "konva": "^9.3.18",
-    "mathjs": "^14.2.0",
-    "react-chartjs-2": "^5.3.0",
-    "react-konva": "^19.0.2",
-    "reactflow": "^11.11.4"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "typescript": "^4.9.4"
   },
   "devDependencies": {
-    "@types/d3": "^7.4.3"
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
+    "eslint": "^8.29.0",
+    "eslint-plugin-react": "^7.31.10"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
