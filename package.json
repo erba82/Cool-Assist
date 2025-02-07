@@ -12,16 +12,16 @@
     "preinstall": "npx npm-check-updates --upgrade"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "react-scripts": "5.0.1",
-    "typescript": "^4.9.4"
+    "typescript": "^5.7.3"
   },
   "devDependencies": {
-    "@types/react": "^18.0.27",
-    "@types/react-dom": "^18.0.10",
-    "eslint": "^8.29.0",
-    "eslint-plugin-react": "^7.31.10"
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "eslint": "^9.19.0",
+    "eslint-plugin-react": "^7.37.4"
   },
   "browserslist": {
     "production": [
