@@ -54,7 +54,7 @@ const PsychrometricChart: React.FC<PsychrometricChartProps> = ({ points, process
     const rhCurves = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
     rhCurves.forEach(rh => {
       // Calculate points for RH curve
-      const curvePoints = [];
+      const curvePoints: [number, number][] = [];
       for (let t = -10; t <= 50; t += 1) {
         const w = calculateHumidityRatio(t, rh);
         curvePoints.push([t, w]);
@@ -70,7 +70,7 @@ const PsychrometricChart: React.FC<PsychrometricChartProps> = ({ points, process
         .attr("fill", "none")
         .attr("stroke", "#ccc")
         .attr("stroke-dasharray", "2,2")
-        .attr("d", line);
+        .attr("d", d => line(d) ?? "");
     });
 
     // Plot points
@@ -110,3 +110,14 @@ const PsychrometricChart: React.FC<PsychrometricChartProps> = ({ points, process
 };
 
 export default PsychrometricChart;
+function calculateHumidityRatio(t: number, rh: number) {
+  // t is in Celsius and rh is expressed as a fraction (0-1)
+  const atmosphericPressure = 101.325; // kPa, standard atmospheric pressure
+  // Calculate saturation vapor pressure using an approximate formula (Magnus formula)
+  const saturationPressure = 0.61078 * Math.exp((17.27 * t) / (t + 237.3)); // kPa
+  // Actual vapor pressure based on relative humidity
+  const vaporPressure = rh * saturationPressure;
+  // Calculate humidity ratio using the formula: w = 0.622 * (Pv / (P - Pv))
+  const humidityRatio = 0.622 * (vaporPressure / (atmosphericPressure - vaporPressure));
+  return humidityRatio;
+}

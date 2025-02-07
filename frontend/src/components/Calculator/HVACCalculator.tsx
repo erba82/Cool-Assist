@@ -10,7 +10,8 @@ import {
   Select,
   MenuItem,
   FormControl,
-  InputLabel
+  InputLabel,
+  SelectChangeEvent
 } from '@mui/material';
 import { HVACCalculations } from '../../services/calculations/HVACCalculations';
 import { ErrorHandler } from '../../services/errorHandling/ErrorHandler';
@@ -98,8 +99,17 @@ export const HVACCalculator: React.FC = () => {
       ErrorHandler.handleError(err as Error, 'HVACCalculator');
     }
   }, [validateInputs]);
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
+  const handleTextFieldChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+    const { name, value } = event.target;
+    if (name) {
+      setInputs(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+  
+  const handleSelectChange = (event: SelectChangeEvent<string>, child?: React.ReactNode) => {
     const { name, value } = event.target;
     if (name) {
       setInputs(prev => ({
@@ -155,133 +165,110 @@ export const HVACCalculator: React.FC = () => {
       <Typography variant="h4" gutterBottom color="primary">
         HVAC Load Calculator
       </Typography>
-      
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <Card elevation={2} sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>Room Dimensions</Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  fullWidth
-                  label="Length (m)"
-                  name="length"
-                  value={inputs.length}
-                  onChange={handleInputChange}
-                  type="number"
-                  margin="normal"
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  fullWidth
-                  label="Width (m)"
-                  name="width"
-                  value={inputs.width}
-                  onChange={handleInputChange}
-                  type="number"
-                  margin="normal"
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  fullWidth
-                  label="Height (m)"
-                  name="height"
-                  value={inputs.height}
-                  onChange={handleInputChange}
-                  type="number"
-                  margin="normal"
-                />
-              </Grid>
-            </Grid>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Card elevation={2} sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>Environmental Factors</Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Outside Temperature (°C)"
-                  name="outsideTemp"
-                  value={inputs.outsideTemp}
-                  onChange={handleInputChange}
-                  type="number"
-                  margin="normal"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Desired Temperature (°C)"
-                  name="desiredTemp"
-                  value={inputs.desiredTemp}
-                  onChange={handleInputChange}
-                  type="number"
-                  margin="normal"
-                />
-              </Grid>
-            </Grid>
-          </Card>
-        </Grid>
-
+      <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Card elevation={2} sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>Additional Information</Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Grid container spacing={2}>
+          <Grid item xs={12} md={4}>
+            <TextField
+                            fullWidth
+                            label="Length (m)"
+                            name="length"
+                            value={inputs.length}
+                            onChange={handleTextFieldChange}
+                            type="number"
+                            margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <TextField
+              fullWidth
+              label="Width (m)"
+              name="width"
+              value={inputs.width}
+              onChange={handleTextFieldChange}
+              type="number"
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <TextField
+              fullWidth
+              label="Height (m)"
+              name="height"
+              value={inputs.height}
+              onChange={handleTextFieldChange}
+              type="number"
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <TextField
+              fullWidth
+              label="Outside Temperature (°C)"
+              name="outsideTemp"
+              value={inputs.outsideTemp}
+              onChange={handleTextFieldChange}
+              type="number"
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <TextField
+              fullWidth
+              label="Desired Temperature (°C)"
+              name="desiredTemp"
+              value={inputs.desiredTemp}
+              onChange={handleTextFieldChange}
+              type="number"
+              margin="normal"
+            />
+          </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
                 <TextField
-                  fullWidth
+                                  fullWidth
+                                  label="Number of Occupants"
+                                  name="occupants"
+                                  value={inputs.occupants}
+                                  onChange={handleTextFieldChange}
+                                  type="number"
+                                  margin="normal"
+                                />
                   label="Number of Occupants"
                   name="occupants"
-                  value={inputs.occupants}
-                  onChange={handleInputChange}
-                  type="number"
-                  margin="normal"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
                 <TextField
-                  fullWidth
+                                  fullWidth
+                                  label="Number of Windows"
+                                  name="windows"
+                                  value={inputs.windows}
+                                  onChange={handleTextFieldChange}
+                                  type="number"
+                                  margin="normal"
+                                />
                   label="Number of Windows"
                   name="windows"
-                  value={inputs.windows}
-                  onChange={handleInputChange}
-                  type="number"
-                  margin="normal"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
                 <TextField
-                  fullWidth
-                  label="Humidity (%)"
-                  name="humidity"
-                  value={inputs.humidity}
-                  onChange={handleInputChange}
-                  type="number"
-                  margin="normal"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <FormControl fullWidth margin="normal">
-                  <InputLabel>Building Type</InputLabel>
+                                  fullWidth
+                                  label="Humidity (%)"
+                                  name="humidity"
+                                  value={inputs.humidity}
+                                  onChange={handleTextFieldChange}
+                                  type="number"
+                                  margin="normal"
+                                />
                   <Select
-                    name="buildingType"
-                    value={inputs.buildingType}
-                    onChange={handleInputChange}
-                    label="Building Type"
-                  >
-                    <MenuItem value="residential">Residential</MenuItem>
-                    <MenuItem value="commercial">Commercial</MenuItem>
-                    <MenuItem value="industrial">Industrial</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-            </Grid>
-          </Card>
+                                      name="buildingType"
+                                      value={inputs.buildingType}
+                                      onChange={handleSelectChange}
+                                      label="Building Type"
+                                    >
+                                      <MenuItem value="residential">Residential</MenuItem>
+                                      <MenuItem value="commercial">Commercial</MenuItem>
+                                      <MenuItem value="industrial">Industrial</MenuItem>
+                                    </Select>
         </Grid>
       </Grid>
 

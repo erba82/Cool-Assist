@@ -15,6 +15,21 @@ import {
 } from '@mui/material';
 import { refrigerationCalculator } from '../../utils/refrigerationCalculations';
 
+interface RefrigerationSystemParams {
+  systemType: 'ammonia' | 'freon' | 'co2';
+  capacity: number;
+  evaporatingTemp: number;
+  condensingTemp: number;
+  fluidType: string;
+  fluidFlow: number;
+  refrigerantType: string;
+  refrigerantTemp: number;
+  surfaceArea: number;
+  subcooling: number;
+  superheating: number;
+  compressorEfficiency: number;
+}
+
 interface HeatExchangerParams {
   type: 'condenser' | 'evaporator';
   heatLoad: number;
@@ -41,10 +56,28 @@ const HeatExchangerCalculator: React.FC = () => {
     surfaceArea: 50
   });
 
+  const convertParamsToRefrigerationParams = (params: HeatExchangerParams): RefrigerationSystemParams => {
+    return {
+      systemType: 'ammonia', // Default to ammonia, adjust based on your needs
+      capacity: params.heatLoad,
+      evaporatingTemp: params.fluidInletTemp,
+      condensingTemp: params.fluidOutletTemp,
+      fluidType: params.fluidType,
+      fluidFlow: params.fluidFlow,
+      refrigerantType: params.refrigerantType,
+      refrigerantTemp: params.refrigerantTemp,
+      surfaceArea: params.surfaceArea,
+      subcooling: 5, // Default value
+      superheating: 5, // Default value
+      compressorEfficiency: 0.75 // Default value
+    };
+  };
+
   const handleCalculate = () => {
-    const results = exchangerType === 'condenser' 
-      ? refrigerationCalculator.calculateCondenser(params)
-      : refrigerationCalculator.calculateEvaporator(params);
+    const refrigerationParams = convertParamsToRefrigerationParams(params);
+    const results = params.type === 'condenser' 
+      ? refrigerationCalculator.calculateCondenser(refrigerationParams)
+      : refrigerationCalculator.calculateEvaporator(refrigerationParams);
     // Handle results...
   };
 
