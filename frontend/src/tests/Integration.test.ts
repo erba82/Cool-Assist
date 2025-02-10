@@ -1,4 +1,3 @@
-// src/tests/Integration.test.ts
 import { RefrigerantCalculator } from '../services/refrigerant/RefrigerantCalculator';
 import { ElectricalCalculations } from '../services/calculations/ElectricalCalculations';
 import { SecurityService } from '../services/security/SecurityService';
@@ -20,11 +19,11 @@ describe('Integration Tests', () => {
     expect(result).toBe(1870);
   });
 
-  test('Security Features', () => {
+  test('Security Features', async () => {
     const data = { test: 'data' };
     const key = 'testKey';
-    const encrypted = SecurityService.encryptData(data, key);
-    const decrypted = SecurityService.decryptData(encrypted, key);
+    const encrypted = await SecurityService.encryptData(data, key);
+    const decrypted = await SecurityService.decryptData(encrypted, key);
     expect(decrypted).toEqual(data);
   });
 });

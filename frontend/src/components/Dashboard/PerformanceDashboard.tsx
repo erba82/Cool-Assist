@@ -37,15 +37,15 @@ export interface PerformanceData {
 }
 
 export class PerformanceService {
-  async getCurrentPerformance(): Promise<{metrics: { cpu: number; memory: number; responseTime: number; errorRate: number } }> {
+  async getCurrentPerformance(): Promise<{ metrics: { cpu: number; memory: number; responseTime: number; errorRate: number } }> {
     // Replace this dummy data with your actual implementation.
     return {
       metrics: {
         cpu: 50,
         memory: 60,
         responseTime: 1500,
-        errorRate: 0
-      }
+        errorRate: 0,
+      },
     };
   }
 
@@ -104,8 +104,8 @@ const PerformanceDashboard: React.FC = () => {
       timestamp: item.timestamp.getTime(),
       metrics: {
         cpu: item.metrics.cpu,
-        memory: item.metrics.memory
-      }
+        memory: item.metrics.memory,
+      },
     }));
   };
 
@@ -126,14 +126,13 @@ const PerformanceDashboard: React.FC = () => {
         const systemMetrics: DashboardSystemMetrics = {
           efficiency: currentPerformance.metrics.cpu,
           performance: currentPerformance.metrics.responseTime,
-          reliability: 100, // use fixed value or remove if not needed
-          maintenance: currentPerformance.metrics.errorRate
+          reliability: 100, // use fixed value or update with real implementation
+          maintenance: currentPerformance.metrics.errorRate,
         };
 
         const optimizationSuggestions: OptimizationSuggestion[] = 
           await optimizer.generateSuggestions(systemMetrics);
         setSuggestions(optimizationSuggestions.map(suggestion => suggestion.description));
-
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
       } finally {

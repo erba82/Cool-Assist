@@ -1,5 +1,3 @@
-// src/utils/systemAnalysis.ts
-
 /**
  * @author erba82
  * @lastModified 2025-02-02 11:38:16
@@ -62,8 +60,10 @@ export class SystemAnalysis {
         maintenance: this.normalizeMetric(maintenance)
       };
     } catch (error) {
-      ErrorHandler.handleError(error instanceof Error ? error : new Error(String(error)), 
-        'SystemAnalysis.getCurrentMetrics');
+      ErrorHandler.handleError(
+        error instanceof Error ? error : new Error(String(error)), 
+        'SystemAnalysis.getCurrentMetrics'
+      );
       throw error;
     }
   }
@@ -71,16 +71,22 @@ export class SystemAnalysis {
   public async getComponentHealth(): Promise<ComponentHealth[]> {
     try {
       const status = await this.monitoringService.getComponentsStatus();
-      return status[0]?.components.map(component => ({
-        id: component.id,
-        name: component.name,
-        status: this.determineComponentStatus(component.efficiency || 0),
-        lastMaintenance: component.lastMaintenance,
-        efficiency: component.efficiency || 0
-      })) || [];
+      return status[0]?.components.map(component => {
+        // Casting component to any to access 'efficiency', which might not be defined in the type.
+        const eff = (component as any).efficiency || 0;
+        return {
+          id: component.id,
+          name: component.name,
+          status: this.determineComponentStatus(eff),
+          lastMaintenance: component.lastMaintenance,
+          efficiency: eff
+        };
+      }) || [];
     } catch (error) {
-      ErrorHandler.handleError(error instanceof Error ? error : new Error(String(error)), 
-        'SystemAnalysis.getComponentHealth');
+      ErrorHandler.handleError(
+        error instanceof Error ? error : new Error(String(error)), 
+        'SystemAnalysis.getComponentHealth'
+      );
       return [];
     }
   }
@@ -88,29 +94,35 @@ export class SystemAnalysis {
   private async calculateEfficiency(): Promise<number> {
     try {
       const status = await this.monitoringService.getComponentsStatus();
-      const components = status[0]?.components || [];
+      const components: Component[] = status[0]?.components || [];
       if (!components.length) return 0;
-      
+
+      // Casting to any to access the 'efficiency' property.
       const efficiencies = components
-        .map(c => c.efficiency || 0)
-        .filter(Boolean);
+        .map(c => (c as any).efficiency || 0)
+        .filter(val => Boolean(val));
 
       if (!efficiencies.length) return 0;
       return efficiencies.reduce((acc, val) => acc + val, 0) / efficiencies.length;
     } catch (error) {
-      ErrorHandler.handleError(error instanceof Error ? error : new Error(String(error)), 
-        'SystemAnalysis.calculateEfficiency');
+      ErrorHandler.handleError(
+        error instanceof Error ? error : new Error(String(error)), 
+        'SystemAnalysis.calculateEfficiency'
+      );
       return 0;
     }
   }
 
   private async calculatePerformance(): Promise<number> {
     try {
-      const performanceData = await this.performanceService.getCurrentPerformance();
-      return performanceData.overallPerformance || 0;
+      const performanceData: PerformanceData = await this.performanceService.getCurrentPerformance();
+      // Casting performanceData to any in order to retrieve overallPerformance
+      return (performanceData as any).overallPerformance || 0;
     } catch (error) {
-      ErrorHandler.handleError(error instanceof Error ? error : new Error(String(error)), 
-        'SystemAnalysis.calculatePerformance');
+      ErrorHandler.handleError(
+        error instanceof Error ? error : new Error(String(error)), 
+        'SystemAnalysis.calculatePerformance'
+      );
       return 0;
     }
   }
@@ -127,8 +139,10 @@ export class SystemAnalysis {
       
       return (uptimeScore + errorScore) / 2;
     } catch (error) {
-      ErrorHandler.handleError(error instanceof Error ? error : new Error(String(error)), 
-        'SystemAnalysis.calculateReliability');
+      ErrorHandler.handleError(
+        error instanceof Error ? error : new Error(String(error)), 
+        'SystemAnalysis.calculateReliability'
+      );
       return 0;
     }
   }
@@ -136,7 +150,7 @@ export class SystemAnalysis {
   private async calculateMaintenanceHealth(): Promise<number> {
     try {
       const status = await this.monitoringService.getComponentsStatus();
-      const components = status[0]?.components || [];
+      const components: Component[] = status[0]?.components || [];
       if (!components.length) return 0;
 
       const maintenanceScores = components.map(component => 
@@ -147,8 +161,10 @@ export class SystemAnalysis {
 
       return maintenanceScores.reduce((acc, score) => acc + score, 0) / maintenanceScores.length;
     } catch (error) {
-      ErrorHandler.handleError(error instanceof Error ? error : new Error(String(error)), 
-        'SystemAnalysis.calculateMaintenanceHealth');
+      ErrorHandler.handleError(
+        error instanceof Error ? error : new Error(String(error)), 
+        'SystemAnalysis.calculateMaintenanceHealth'
+      );
       return 0;
     }
   }

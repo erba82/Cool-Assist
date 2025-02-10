@@ -22,8 +22,6 @@ import {
 } from '@mui/icons-material';
 import { Line } from 'react-chartjs-2';
 import { MonitoringService } from '../../services/monitoring/MonitoringService';
-
-const monitoringService = MonitoringService.getInstance();
 import { SystemStatus } from '../../types/monitoring';
 
 interface SensorData {
@@ -31,6 +29,8 @@ interface SensorData {
   compressorPressure?: number;
   systemTemp?: number;
 }
+
+const monitoringService = MonitoringService.getInstance();
 
 const LiveMonitoring: React.FC = () => {
   const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
@@ -57,10 +57,13 @@ const LiveMonitoring: React.FC = () => {
   };
 
   const updateHistoricalData = (status: SystemStatus) => {
-    setHistoricalData(prev => [...prev.slice(-50), {
-      timestamp: new Date(),
-      ...(status as any).sensors
-    }]);
+    setHistoricalData(prev => [
+      ...prev.slice(-50),
+      {
+        timestamp: new Date(),
+        ...(status as any).sensors
+      }
+    ]);
   };
 
   const checkAlerts = (status: SystemStatus) => {
@@ -126,13 +129,13 @@ const LiveMonitoring: React.FC = () => {
                   datasets: [
                     {
                       label: 'Compressor Pressure',
-                      data: historicalData.map(d => d.compressorPressure),
+                      data: historicalData.map(d => d.compressorPressure ?? null),
                       borderColor: 'rgb(75, 192, 192)',
                       tension: 0.1
                     },
                     {
                       label: 'System Temperature',
-                      data: historicalData.map(d => d.systemTemp),
+                      data: historicalData.map(d => d.systemTemp ?? null),
                       borderColor: 'rgb(255, 99, 132)',
                       tension: 0.1
                     }

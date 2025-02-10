@@ -61,16 +61,16 @@ const PsychrometricChart: React.FC<PsychrometricChartProps> = ({ points, process
       }
 
       // Draw RH curve
-      const line = d3.line()
-        .x(d => xScale(d[0]))
-        .y(d => yScale(d[1]));
+      const line = d3.line<[number, number]>()
+        .x((d: [number, number]) => xScale(d[0]))
+        .y((d: [number, number]) => yScale(d[1]));
 
       svg.append("path")
         .datum(curvePoints)
         .attr("fill", "none")
         .attr("stroke", "#ccc")
         .attr("stroke-dasharray", "2,2")
-        .attr("d", d => line(d) ?? "");
+        .attr("d", (d: [number, number][]) => line(d) ?? "");
     });
 
     // Plot points
@@ -78,12 +78,12 @@ const PsychrometricChart: React.FC<PsychrometricChartProps> = ({ points, process
       .data(points)
       .enter()
       .append("circle")
-      .attr("cx", d => xScale(d.dryBulb))
-      .attr("cy", d => yScale(d.humidity))
+      .attr("cx", (d: PsychrometricPoint) => xScale(d.dryBulb))
+      .attr("cy", (d: PsychrometricPoint) => yScale(d.humidity))
       .attr("r", 5)
       .attr("fill", "blue");
 
-    // Draw process lines
+    // Draw process lines if provided
     if (processLines) {
       processLines.forEach(line => {
         svg.append("line")
@@ -110,7 +110,8 @@ const PsychrometricChart: React.FC<PsychrometricChartProps> = ({ points, process
 };
 
 export default PsychrometricChart;
-function calculateHumidityRatio(t: number, rh: number) {
+
+function calculateHumidityRatio(t: number, rh: number): number {
   // t is in Celsius and rh is expressed as a fraction (0-1)
   const atmosphericPressure = 101.325; // kPa, standard atmospheric pressure
   // Calculate saturation vapor pressure using an approximate formula (Magnus formula)
@@ -118,6 +119,5 @@ function calculateHumidityRatio(t: number, rh: number) {
   // Actual vapor pressure based on relative humidity
   const vaporPressure = rh * saturationPressure;
   // Calculate humidity ratio using the formula: w = 0.622 * (Pv / (P - Pv))
-  const humidityRatio = 0.622 * (vaporPressure / (atmosphericPressure - vaporPressure));
-  return humidityRatio;
+  return 0.622 * (vaporPressure / (atmosphericPressure - vaporPressure));
 }

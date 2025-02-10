@@ -1,5 +1,3 @@
-// src/utils/unitConverter.ts
-
 type UnitType = 'temperature' | 'pressure' | 'length' | 'mass';
 
 type TemperatureUnit = 'C' | 'F' | 'K' | 'R';
@@ -24,18 +22,26 @@ class UnitConverter {
     mass: { kg: 1, lb: 0.4536, g: 0.001, oz: 0.02835 }
   };
 
+  /**
+   * Convert a value from one unit to another.
+   *
+   * @param value - numerical value to convert
+   * @param fromUnit - original unit
+   * @param toUnit - target unit
+   * @param unitType - type of unit conversion (temperature, pressure, length, mass)
+   * @returns the converted value
+   */
   convert(value: number, fromUnit: Unit, toUnit: Unit, unitType: UnitType): number {
     try {
       const fromFactor = this.unitFactors[unitType][fromUnit as keyof typeof this.unitFactors[typeof unitType]];
       const toFactor = this.unitFactors[unitType][toUnit as keyof typeof this.unitFactors[typeof unitType]];
-
       return (value * fromFactor) / toFactor;
     } catch (error) {
       throw new Error(`Invalid conversion: ${fromUnit} to ${toUnit} for type ${unitType}`);
     }
   }
 
-  // اگر متدهای دیگری دارید، اینجا اضافه کنید
+  // Add additional methods if needed
 }
 
-export default UnitConverter;
+export default new UnitConverter();

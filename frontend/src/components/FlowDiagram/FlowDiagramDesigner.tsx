@@ -1,14 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import ReactFlow, {
-  Node,
-  Edge,
-  Connection,
-  addEdge,
-  Background,
-  Controls,
-  MiniMap,
-  NodeTypes
-} from 'reactflow';
+import ReactFlow, { addEdge, Background, Controls, MiniMap } from 'reactflow';
 import 'reactflow/dist/style.css';
 import {
   Box,
@@ -19,7 +10,6 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  IconButton,
   TextField,
   Button,
   Stack
@@ -33,15 +23,35 @@ import {
   Settings as ControlIcon
 } from '@mui/icons-material';
 
-// Custom Node Components
+// Instead of using the types from reactflow which may cause namespace issues,
+// we define our own minimal type interfaces for our diagram.
+export interface FlowNode<T = any> {
+  id: string;
+  type?: string;
+  position: { x: number; y: number };
+  data: T;
+  // Additional properties can be added if needed.
+}
+
+export interface FlowEdge {
+  id?: string;
+  source: string;
+  target: string;
+  // You can extend this interface with additional properties as required.
+}
+
+export interface FlowConnection {
+  source: string;
+  target: string;
+  sourceHandle?: string | null;
+  targetHandle?: string | null;
+}
+
+// Custom Node Component for rendering our nodes.
 const CustomNode = ({ data }: { data: any }) => (
   <Paper
     elevation={3}
-    sx={{
-      padding: 1,
-      minWidth: 150,
-      backgroundColor: data.color || '#fff'
-    }}
+    style={{ padding: 8, minWidth: 150, backgroundColor: data.color || '#fff' }}
   >
     <Typography variant="subtitle2">{data.label}</Typography>
     {data.details && (
@@ -52,32 +62,33 @@ const CustomNode = ({ data }: { data: any }) => (
   </Paper>
 );
 
-const nodeTypes = {
-  custom: CustomNode
-};
+const nodeTypes = { custom: CustomNode };
 
 interface FlowDiagramData {
-  nodes: Node[];
-  edges: Edge[];
+  nodes: FlowNode<any>[];
+  edges: FlowEdge[];
 }
 
 export const FlowDiagramDesigner: React.FC = () => {
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
-  const [drawerOpen, setDrawerOpen] = useState(true);
-  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [nodes, setNodes] = useState<FlowNode<any>[]>([]);
+  const [edges, setEdges] = useState<FlowEdge[]>([]);
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(true);
+  const [selectedNode, setSelectedNode] = useState<FlowNode<any> | null>(null);
 
   const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
+    (params: FlowConnection) => setEdges((eds) => addEdge(params, eds)),
     []
   );
 
-  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    setSelectedNode(node);
-  }, []);
+  const onNodeClick = useCallback(
+    (event: React.MouseEvent, node: FlowNode<any>) => {
+      setSelectedNode(node);
+    },
+    []
+  );
 
   const addNewNode = (type: string) => {
-    const newNode = {
+    const newNode: FlowNode<any> = {
       id: `${type}-${nodes.length + 1}`,
       type: 'custom',
       position: { x: 100, y: 100 },
@@ -88,7 +99,6 @@ export const FlowDiagramDesigner: React.FC = () => {
         details: getDefaultDetails(type)
       }
     };
-
     setNodes((nds) => [...nds, newNode]);
   };
 
@@ -153,7 +163,7 @@ export const FlowDiagramDesigner: React.FC = () => {
       edges
     };
     localStorage.setItem('flowDiagram', JSON.stringify(flowData));
-    // TODO: Implement backend save functionality
+    // Additional backend save functionality can be implemented if needed.
   };
 
   const onLoad = () => {
@@ -221,7 +231,6 @@ export const FlowDiagramDesigner: React.FC = () => {
             <ListItemText primary="Control" />
           </ListItem>
         </List>
-
         <Stack spacing={2} sx={{ p: 2 }}>
           <Button variant="contained" onClick={onSave}>
             Save Diagram
@@ -231,7 +240,6 @@ export const FlowDiagramDesigner: React.FC = () => {
           </Button>
         </Stack>
       </Drawer>
-
       <Box sx={{ flexGrow: 1 }}>
         <ReactFlow
           nodes={nodes}
@@ -246,11 +254,10 @@ export const FlowDiagramDesigner: React.FC = () => {
           <MiniMap />
         </ReactFlow>
       </Box>
-
       {selectedNode && (
         <Drawer
           anchor="right"
-          open={!!selectedNode}
+          open={Boolean(selectedNode)}
           onClose={() => setSelectedNode(null)}
           sx={{ width: 300 }}
         >

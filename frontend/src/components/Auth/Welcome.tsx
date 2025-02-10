@@ -1,5 +1,4 @@
-// src/components/Auth/Welcome.tsx
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Box, Typography, Container } from '@mui/material';
 import { styled } from '@mui/material/styles';

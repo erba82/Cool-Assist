@@ -70,6 +70,7 @@ export class MonitoringService {
         this.isConnecting = false;
         const error = new Error('WebSocket connection error');
         error.name = 'WebSocketError';
+        // @ts-ignore
         error.cause = event;
         ErrorHandler.handleError(error, 'MonitoringService.wsError');
       };
@@ -111,7 +112,7 @@ export class MonitoringService {
       const response = await apiService.get<{ data: Alert[] }>('/monitoring/alerts/active');
       return response.data.data.map(alert => ({
         ...alert,
-        timestamp: alert.timestamp // No need to convert to Date anymore
+        timestamp: alert.timestamp // نیازی به تبدیل به تاریخ نیست
       }));
     } catch (error) {
       ErrorHandler.handleError(error as Error, 'MonitoringService.getActiveAlerts');
@@ -152,7 +153,7 @@ export class MonitoringService {
       return {
         ...response.data.data,
         timestamp: new Date(),
-        lastDowntime: response.data.data.lastDowntime // No need to convert to Date anymore
+        lastDowntime: response.data.data.lastDowntime // نیازی به تبدیل به تاریخ نیست
       };
     } catch (error) {
       ErrorHandler.handleError(error as Error, 'MonitoringService.getSystemUptime');
@@ -212,7 +213,7 @@ export class MonitoringService {
       } catch (error) {
         ErrorHandler.handleError(error as Error, 'MonitoringService.startPerformanceLogging');
       }
-    }, 60000); // Log every minute
+    }, 60000); // ثبت هر دقیقه
   }
 
   private async logCurrentPerformance(): Promise<void> {
@@ -242,7 +243,6 @@ export class MonitoringService {
   }
 
   private async flushMetricsBuffer(): Promise<void> {
-
     if (this.metricsBuffer.length === 0) return;
 
     try {

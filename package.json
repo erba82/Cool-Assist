@@ -1,27 +1,58 @@
 {
   "name": "cool-assist",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.3",
+    "@mui/lab": "^6.0.0-beta.25",
+    "@mui/material": "^5.16.14",
+    "@mui/x-date-pickers": "6.18.7",
+    "@reduxjs/toolkit": "^2.5.1",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/axios": "^0.14.4",
+    "@types/d3": "^7.4.3",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.39",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "axios": "^0.27.2",
+    "buffer": "^6.0.3",
+    "chart.js": "^4.4.7",
+    "crypto-js": "^4.2.0",
+    "d3": "^7.9.0",
+    "dayjs": "1.11.10",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
+    "konva": "^9.3.18",
+    "mathjs": "^14.2.1",
+    "react": "^18.2.0",
+    "react-chartjs-2": "^5.3.0",
+    "react-dom": "^18.2.0",
+    "react-konva": "^19.0.2",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "6.21.0",
+    "react-scripts": "5.0.1",
+    "reactflow": "^11.11.4",
+    "recharts": "^2.15.1",
+    "typescript": "^5.7.3",
+    "web-vitals": "^2.1.4"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
-    "audit": "npm audit",
-    "preinstall": "npx npm-check-updates --upgrade"
+    "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'"
   },
-  "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-scripts": "5.0.1",
-    "typescript": "^5.7.3"
-  },
-  "devDependencies": {
-    "@types/react": "^19.0.8",
-    "@types/react-dom": "^19.0.3",
-    "eslint": "^9.19.0",
-    "eslint-plugin-react": "^7.37.4"
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "browserslist": {
     "production": [
@@ -34,5 +65,15 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@types/react-chartjs-2": "^2.5.7",
+    "@typescript-eslint/eslint-plugin": "^8.23.0",
+    "@typescript-eslint/parser": "^8.23.0",
+    "eslint-plugin-react": "^7.37.4"
+  },
+  "resolutions": {
+    "@mui/icons-material": "5.16.14"
   }
 }

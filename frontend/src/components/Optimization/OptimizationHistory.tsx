@@ -58,7 +58,7 @@ export const OptimizationHistory: React.FC = () => {
       try {
         setLoading(true);
         const optimizer = PerformanceOptimizer.getInstance();
-        const historyData = await optimizer.getOptimizationHistory();
+        const historyData = await (optimizer as any).getHistory();
         setHistory(historyData);
       } catch (error) {
         console.error('Failed to fetch optimization history:', error);
@@ -175,4 +175,59 @@ export const OptimizationHistory: React.FC = () => {
                       <IconButton
                         size="small"
                         onClick={() => setExpandedRow(
-                          expandedRow === record.id ? null : record.i
+                          expandedRow === record.id ? null : record.id // اصلاح خطا
+                        )}
+                      >
+                        {expandedRow === record.id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                      </IconButton>
+                    </TableCell>
+                    <TableCell>{record.timestamp.toLocaleString()}</TableCell>
+                    <TableCell>{record.parameter}</TableCell>
+                    <TableCell>{`${record.previousValue} -> ${record.newValue}`}</TableCell>
+                    <TableCell>{record.improvement}</TableCell>
+                    <TableCell>
+                      <Chip label={record.status} color={getStatusColor(record.status)} />
+                    </TableCell>
+                    <TableCell>
+                      <Chip label={record.impact} color={getImpactColor(record.impact)} />
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell colSpan={7} style={{ paddingBottom: 0, paddingTop: 0 }}>
+                      <Collapse in={expandedRow === record.id} timeout="auto" unmountOnExit>
+                        <Box margin={1}>
+                          <Typography variant="h6" gutterBottom component="div">
+                            Details
+                          </Typography>
+                          <List>
+                            {record.steps.map((step, index) => (
+                              <ListItem key={index}>
+                                <ListItemText primary={step} />
+                              </ListItem>
+                            ))}
+                          </List>
+                          <Typography variant="body2">{record.notes}</Typography>
+                        </Box>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
+              ))}
+          </TableBody>
+        </Table>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={filteredHistory.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Card>
+      {loading && <CircularProgress />}
+    </Box>
+  );
+};
+
+export default OptimizationHistory;

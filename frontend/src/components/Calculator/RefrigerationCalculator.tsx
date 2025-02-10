@@ -3,6 +3,10 @@ import { TextField, Button, Card, CardContent, Typography, Grid, Alert } from '@
 import { RefrigerantProperties } from '../../services/refrigerant/RefrigerantProperties';
 import { ErrorHandler } from '../../services/errorHandling/ErrorHandler';
 
+interface RefrigerationCalculatorProps {
+  type?: 'ammonia' | 'freon' | 'co2';
+}
+
 interface CalculationResult {
   cop: number;
   capacity: number;
@@ -10,11 +14,11 @@ interface CalculationResult {
   massFlow: number;
 }
 
-export const RefrigerationCalculator: React.FC = () => {
+export const RefrigerationCalculator: React.FC<RefrigerationCalculatorProps> = ({ type }) => {
   const [inputs, setInputs] = useState({
     evaporatorTemp: '',
     condenserTemp: '',
-    refrigerantType: 'R134a',
+    refrigerantType: type ? type.toUpperCase() : 'R134a',
     capacity: ''
   });
   const [results, setResults] = useState<CalculationResult | null>(null);
@@ -133,7 +137,7 @@ export const RefrigerationCalculator: React.FC = () => {
   return (
     <div>
       <Typography variant="h4" gutterBottom>
-        Refrigeration System Calculator
+        Refrigeration System Calculator {type ? `- ${type.toUpperCase()} System` : ''}
       </Typography>
       
       <Grid container spacing={2}>
@@ -183,10 +187,17 @@ export const RefrigerationCalculator: React.FC = () => {
               native: true
             }}
           >
-            <option value="R134a">R134a</option>
-            <option value="R410A">R410A</option>
-            <option value="R407C">R407C</option>
-            <option value="R32">R32</option>
+            {/* If a type prop is passed, we lock the refrigerant type */}
+            {type ? (
+              <option value={inputs.refrigerantType}>{inputs.refrigerantType}</option>
+            ) : (
+              <>
+                <option value="R134a">R134a</option>
+                <option value="R410A">R410A</option>
+                <option value="R407C">R407C</option>
+                <option value="R32">R32</option>
+              </>
+            )}
           </TextField>
         </Grid>
       </Grid>

@@ -1,12 +1,9 @@
 import React from 'react';
-import { Box, AppBar, Toolbar, Typography, Container, Drawer } from '@mui/material';
-import Sidebar from './Sidebar';
+import { Box, AppBar, Toolbar, Typography, Container } from '@mui/material';
+import { Outlet } from 'react-router-dom';
+import Sidebar from '../Layout/Sidebar';
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC = () => {
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBar position="fixed">
@@ -24,7 +21,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         }}
       >
         <Container maxWidth="lg">
-          {children}
+          <Outlet />
         </Container>
       </Box>
     </Box>

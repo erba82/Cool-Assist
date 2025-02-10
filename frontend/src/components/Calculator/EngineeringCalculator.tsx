@@ -1,4 +1,3 @@
-// src/components/Calculator/EngineeringCalculator.tsx
 import React, { useState } from 'react';
 import { Box, Grid, TextField, Button, Typography } from '@mui/material';
 import { evaluate } from 'mathjs';
@@ -41,3 +40,5 @@ const EngineeringCalculator: React.FC<CalculatorProps> = ({ onCalculate }) => {
     </Box>
   );
 };
+
+export default EngineeringCalculator;

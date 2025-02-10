@@ -15,7 +15,7 @@ const menuItems = [
   { text: 'Knowledge Base', icon: <LibraryBooksIcon />, path: '/knowledge' },
 ];
 
-const Sidebar = () => {
+const Sidebar: React.FC = () => {
   return (
     <Drawer
       variant="permanent"
@@ -30,8 +30,8 @@ const Sidebar = () => {
       }}
     >
       <List>
-        {menuItems.map((item) => (
-          <ListItem button key={item.text} component={Link} to={item.path}>
+        {menuItems.map((item, index) => (
+          <ListItem button key={index} component={Link} to={item.path}>
             <ListItemIcon>{item.icon}</ListItemIcon>
             <ListItemText primary={item.text} />
           </ListItem>
