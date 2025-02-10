@@ -19,7 +19,7 @@
     "@types/node": "^16.18.39",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
-    "axios": "^0.27.2",
+    "axios": "^1.7.9",
     "buffer": "^6.0.3",
     "chart.js": "^4.4.7",
     "crypto-js": "^4.2.0",
