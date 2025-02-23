@@ -35,7 +35,7 @@ const SocialButton = styled(Button)(({ theme }) => ({
   padding: theme.spacing(1.5),
 }));
 
-export const SignUp: React.FC = () => {
+const SignUp: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
@@ -43,15 +43,12 @@ export const SignUp: React.FC = () => {
     confirmPassword: '',
     fullName: '',
   });
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const validateForm = (): boolean => {
@@ -73,27 +70,27 @@ export const SignUp: React.FC = () => {
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
-
     try {
       setIsLoading(true);
       setError(null);
       await AuthService.signUpWithEmail(formData);
       navigate('/dashboard');
     } catch (err) {
+      console.error('SignUp error:', err);
       setError(err instanceof Error ? err.message : 'Sign up failed');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // تغییر متد فراخوانی از signUpWithGoogle به googleSignUp (یا نام متد صحیح موجود در AuthService)
   const handleGoogleSignUp = async () => {
     try {
       setIsLoading(true);
       setError(null);
       await AuthService.googleSignUp();
-      navigate('/dashboard');
+      // OAuth flow: redirect will occur
     } catch (err) {
+      console.error('Google sign up error:', err);
       setError('Google sign up failed');
     } finally {
       setIsLoading(false);
@@ -105,8 +102,9 @@ export const SignUp: React.FC = () => {
       setIsLoading(true);
       setError(null);
       await AuthService.signUpWithLinkedIn();
-      navigate('/dashboard');
+      // OAuth flow: redirect will occur
     } catch (err) {
+      console.error('LinkedIn sign up error:', err);
       setError('LinkedIn sign up failed');
     } finally {
       setIsLoading(false);
@@ -118,7 +116,6 @@ export const SignUp: React.FC = () => {
       <Typography variant="h5" align="center" gutterBottom>
         Create Account
       </Typography>
-
       <Stack spacing={2}>
         <SocialButton
           variant="outlined"
@@ -128,7 +125,6 @@ export const SignUp: React.FC = () => {
         >
           Continue with Google
         </SocialButton>
-
         <SocialButton
           variant="outlined"
           startIcon={<LinkedInIcon />}
@@ -145,9 +141,7 @@ export const SignUp: React.FC = () => {
         >
           Continue with LinkedIn
         </SocialButton>
-
         <Divider>or</Divider>
-
         <Box component="form" onSubmit={handleEmailSignUp}>
           <TextField
             fullWidth
@@ -158,7 +152,6 @@ export const SignUp: React.FC = () => {
             onChange={handleInputChange}
             disabled={isLoading}
           />
-
           <TextField
             fullWidth
             margin="normal"
@@ -169,7 +162,6 @@ export const SignUp: React.FC = () => {
             onChange={handleInputChange}
             disabled={isLoading}
           />
-
           <TextField
             fullWidth
             margin="normal"
@@ -182,17 +174,13 @@ export const SignUp: React.FC = () => {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => setShowPassword(!showPassword)}
-                    edge="end"
-                  >
+                  <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               ),
             }}
           />
-
           <TextField
             fullWidth
             margin="normal"
@@ -203,13 +191,11 @@ export const SignUp: React.FC = () => {
             onChange={handleInputChange}
             disabled={isLoading}
           />
-
           {error && (
             <Alert severity="error" sx={{ mt: 2 }}>
               {error}
             </Alert>
           )}
-
           <Button
             fullWidth
             type="submit"
@@ -221,7 +207,6 @@ export const SignUp: React.FC = () => {
             Sign Up with Email
           </Button>
         </Box>
-
         <Typography variant="body2" align="center" sx={{ mt: 2 }}>
           Already have an account?{' '}
           <Button variant="text" onClick={() => navigate('/login')}>

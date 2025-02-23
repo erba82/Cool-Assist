@@ -1,18 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { combineReducers } from 'redux';
-
-// دمی ریدوسر برای تست
-const dummyReducer = (state = {}, action: any) => state;
-
-const rootReducer = combineReducers({
-  dummy: dummyReducer,
-  // ریدوسرهای واقعی را اینجا اضافه کنید
-});
+import authReducer from './slices/authSlice';
 
 export const store = configureStore({
-  reducer: rootReducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
+  reducer: {
+    auth: authReducer,
+    // سایر reducerها در صورت نیاز می‌توانند اضافه شوند
+  },
 });
 
-export type RootState = ReturnType<typeof rootReducer>;
+export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

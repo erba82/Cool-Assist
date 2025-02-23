@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import {
-  Box,
-  CircularProgress,
-  Typography,
-  Alert,
-  Paper,
-  LinearProgress
-} from '@mui/material';
+import { Box, CircularProgress, Typography, Alert, Paper, LinearProgress } from '@mui/material';
 import { AuthService } from '../../services/authService';
 import { LinkedInAIService } from '../../services/ai/LinkedInAIService';
 import { styled } from '@mui/material/styles';
@@ -34,7 +27,7 @@ interface ProcessStatus {
   profile: 'pending' | 'complete' | 'error';
 }
 
-export const LinkedInCallback: React.FC = () => {
+const LinkedInCallback: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [error, setError] = useState<string | null>(null);
@@ -43,27 +36,21 @@ export const LinkedInCallback: React.FC = () => {
     aiInit: 'pending',
     profile: 'pending'
   });
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState<number>(0);
 
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // دریافت پارامترهای URL
         const params = new URLSearchParams(location.search);
         const code = params.get('code');
         const state = params.get('state');
-
         if (!code || !state) {
           throw new Error('Invalid callback parameters');
         }
-
-        // مرحله ۱: احراز هویت
         setProgress(20);
         const user = await AuthService.handleLinkedInCallback(code, state);
         setStatus(prev => ({ ...prev, auth: 'complete' }));
         setProgress(40);
-
-        // مرحله ۲: مقداردهی اولیه سرویس هوش مصنوعی
         const aiService = LinkedInAIService.getInstance();
         if (!user.linkedInAccessToken) {
           throw new Error('Missing LinkedIn access token');
@@ -71,40 +58,27 @@ export const LinkedInCallback: React.FC = () => {
         await aiService.initializeAILearning(user.linkedInAccessToken);
         setStatus(prev => ({ ...prev, aiInit: 'complete' }));
         setProgress(70);
-
-        // مرحله ۳: دریافت و پردازش پروفایل LinkedIn
         await AuthService.updateUserProfile(user.id);
         setStatus(prev => ({ ...prev, profile: 'complete' }));
         setProgress(100);
-
-        // هدایت به داشبورد پس از تاخیر کوتاه
         setTimeout(() => {
           navigate('/dashboard');
         }, 1500);
-
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Authentication failed';
         setError(errorMessage);
-        setStatus({
-          auth: 'error',
-          aiInit: 'error',
-          profile: 'error'
-        });
-
-        // هدایت به صفحه ورود پس از بروز خطا
+        setStatus({ auth: 'error', aiInit: 'error', profile: 'error' });
         setTimeout(() => {
           navigate('/login');
         }, 3000);
       }
     };
-
     handleCallback();
   }, [location, navigate]);
 
   const renderStatus = (label: string, status: 'pending' | 'complete' | 'error') => {
-    let color = 'primary';
+    let color: 'primary' | 'success' | 'error' = 'primary';
     let message = 'In Progress...';
-
     switch (status) {
       case 'complete':
         color = 'success';
@@ -115,7 +89,6 @@ export const LinkedInCallback: React.FC = () => {
         message = 'Failed';
         break;
     }
-
     return (
       <Typography variant="body2" color={color}>
         {label}: {message}
@@ -128,7 +101,6 @@ export const LinkedInCallback: React.FC = () => {
       <Typography variant="h5" gutterBottom>
         LinkedIn Authentication
       </Typography>
-
       {error ? (
         <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
           {error}
@@ -137,11 +109,7 @@ export const LinkedInCallback: React.FC = () => {
         <>
           <CircularProgress size={40} sx={{ mb: 3 }} />
           <ProgressContainer>
-            <LinearProgress
-              variant="determinate"
-              value={progress}
-              sx={{ height: 8, borderRadius: 5 }}
-            />
+            <LinearProgress variant="determinate" value={progress} sx={{ height: 8, borderRadius: 5 }} />
             <Box sx={{ mt: 2 }}>
               {renderStatus('Authentication', status.auth)}
               {renderStatus('AI Initialization', status.aiInit)}
