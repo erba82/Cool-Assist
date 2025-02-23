@@ -2,9 +2,7 @@
  * ApiService with interceptors.
  */
 
-import axios from 'axios';
-
-import { AxiosInstance, AxiosResponse, AxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
@@ -24,7 +22,7 @@ class ApiService {
 
   private setupInterceptors(): void {
     this.api.interceptors.request.use(
-      (config: AxiosRequestConfig) => {
+      (config: InternalAxiosRequestConfig) => {
         const token = localStorage.getItem('token');
         if (token) {
           config.headers = config.headers || {};

@@ -12,7 +12,8 @@ import {
   ListItemIcon,
   TextField,
   Button,
-  Stack
+  Stack,
+  ListItemButton
 } from '@mui/material';
 import {
   AcUnit as CoolingIcon,
@@ -34,17 +35,22 @@ export interface FlowNode<T = any> {
 }
 
 export interface FlowEdge {
-  id?: string;
-  source: string;
-  target: string;
-  // You can extend this interface with additional properties as required.
-}
-
-export interface FlowConnection {
+  id: string;
   source: string;
   target: string;
   sourceHandle?: string | null;
   targetHandle?: string | null;
+  type?: string;
+  animated?: boolean;
+  style?: React.CSSProperties;
+  // You can extend this interface with additional properties as required.
+}
+
+export interface FlowConnection {
+  source: string | null;
+  target: string | null;
+  sourceHandle: string | null;
+  targetHandle: string | null;
 }
 
 // Custom Node Component for rendering our nodes.
@@ -194,41 +200,53 @@ export const FlowDiagramDesigner: React.FC = () => {
           <ListItem>
             <Typography variant="h6">Components</Typography>
           </ListItem>
-          <ListItem button onClick={() => addNewNode('Cooling')}>
-            <ListItemIcon>
-              <CoolingIcon />
-            </ListItemIcon>
-            <ListItemText primary="Cooling Unit" />
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => addNewNode('Cooling')}>
+              <ListItemIcon>
+                <CoolingIcon />
+              </ListItemIcon>
+              <ListItemText primary="Cooling Unit" />
+            </ListItemButton>
           </ListItem>
-          <ListItem button onClick={() => addNewNode('Heating')}>
-            <ListItemIcon>
-              <HeatingIcon />
-            </ListItemIcon>
-            <ListItemText primary="Heating Unit" />
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => addNewNode('Heating')}>
+              <ListItemIcon>
+                <HeatingIcon />
+              </ListItemIcon>
+              <ListItemText primary="Heating Unit" />
+            </ListItemButton>
           </ListItem>
-          <ListItem button onClick={() => addNewNode('Fan')}>
-            <ListItemIcon>
-              <FanIcon />
-            </ListItemIcon>
-            <ListItemText primary="Fan" />
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => addNewNode('Fan')}>
+              <ListItemIcon>
+                <FanIcon />
+              </ListItemIcon>
+              <ListItemText primary="Fan" />
+            </ListItemButton>
           </ListItem>
-          <ListItem button onClick={() => addNewNode('Compressor')}>
-            <ListItemIcon>
-              <CompressorIcon />
-            </ListItemIcon>
-            <ListItemText primary="Compressor" />
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => addNewNode('Compressor')}>
+              <ListItemIcon>
+                <CompressorIcon />
+              </ListItemIcon>
+              <ListItemText primary="Compressor" />
+            </ListItemButton>
           </ListItem>
-          <ListItem button onClick={() => addNewNode('Sensor')}>
-            <ListItemIcon>
-              <SensorIcon />
-            </ListItemIcon>
-            <ListItemText primary="Sensor" />
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => addNewNode('Sensor')}>
+              <ListItemIcon>
+                <SensorIcon />
+              </ListItemIcon>
+              <ListItemText primary="Sensor" />
+            </ListItemButton>
           </ListItem>
-          <ListItem button onClick={() => addNewNode('Control')}>
-            <ListItemIcon>
-              <ControlIcon />
-            </ListItemIcon>
-            <ListItemText primary="Control" />
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => addNewNode('Control')}>
+              <ListItemIcon>
+                <ControlIcon />
+              </ListItemIcon>
+              <ListItemText primary="Control" />
+            </ListItemButton>
           </ListItem>
         </List>
         <Stack spacing={2} sx={{ p: 2 }}>

@@ -24,15 +24,9 @@ dayjs.locale("fa");
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route element={<Layout />}>
-      <Route index element={<HomePage />} />
-      <Route path="chat" element={<ChatPage />} />
-      <Route path="dashboard" element={<PerformanceDashboard />} />
-      <Route path="health" element={<SystemHealth />} />
-      <Route path="optimization" element={<OptimizationHistory />} />
-      <Route path="analytics" element={<PerformanceAnalytics />} />
-      <Route path="auth/linkedin/callback" element={<LinkedInCallback />} />
-    </Route>
+    <React.Fragment>
+      <Route path="/" element={<HomePage />} /> {/* فقط Route صفحه اصلی */}
+    </React.Fragment>
   )
 );
 

@@ -1,1 +1,2 @@
-declare module 'reactflow';
+declare module '@reactflow/core';
+export {};

@@ -12,6 +12,7 @@ import {
   Button,
   Stack,
 } from '@mui/material';
+import dayjs, { Dayjs } from 'dayjs';
 import {
   BarChart,
   Bar,
@@ -30,7 +31,7 @@ import {
 import { PerformanceService } from '../../services/performance/PerformanceService';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { PerformanceData } from '../../types/monitoring';
 
 interface AnalyticsData {
@@ -163,8 +164,8 @@ const generateAnalyticsData = (history: PerformanceData[]): AnalyticsData => {
 
 export const PerformanceAnalytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState('7d');
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [startDate, setStartDate] = useState<Dayjs | null>(null);
+  const [endDate, setEndDate] = useState<Dayjs | null>(null);
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -180,24 +181,24 @@ export const PerformanceAnalytics: React.FC = () => {
       let start = startDate;
       let end = endDate;
       if (!start || !end) {
-        end = new Date();
-        start = new Date();
+        end = dayjs();
+        start = dayjs();
         switch (timeRange) {
           case '7d':
-            start.setDate(end.getDate() - 7);
+            start = end.subtract(7, 'day');
             break;
           case '30d':
-            start.setDate(end.getDate() - 30);
+            start = end.subtract(30, 'day');
             break;
           case '90d':
-            start.setDate(end.getDate() - 90);
+            start = end.subtract(90, 'day');
             break;
           default:
             break;
         }
       }
       // دریافت تاریخچه عملکرد بین تاریخ‌های start و end
-      const history = await performanceService.getPerformanceHistory(start, end);
+      const history = await performanceService.getPerformanceHistory(start?.toDate(), end?.toDate());
       // تبدیل تاریخچه عملکرد به داده‌های آنالیتیکس
       const analytics = generateAnalyticsData(history);
       setAnalyticsData(analytics);
@@ -209,7 +210,7 @@ export const PerformanceAnalytics: React.FC = () => {
   };
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box sx={{ p: 3 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h4">Performance Analytics</Typography>
@@ -228,7 +229,7 @@ export const PerformanceAnalytics: React.FC = () => {
               </Select>
             </FormControl>
             {timeRange === 'custom' && (
-              <>
+                <>
                 <DatePicker
                   label="Start Date"
                   value={startDate}
@@ -239,7 +240,7 @@ export const PerformanceAnalytics: React.FC = () => {
                   value={endDate}
                   onChange={(newValue) => setEndDate(newValue)}
                 />
-              </>
+                </>
             )}
             <Button variant="contained" onClick={fetchAnalyticsData} disabled={loading}>
               Update
